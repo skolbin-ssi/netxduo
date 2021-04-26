@@ -26,7 +26,7 @@
 /*  APPLICATION INTERFACE DEFINITION                       RELEASE        */
 /*                                                                        */
 /*    nxd_mqtt_client.h                                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.2        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -42,6 +42,12 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            added ack receive notify,   */
+/*                                            resulting in version 6.1    */
+/*  11-09-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            added packet id parameter,  */
+/*                                            resulting in version 6.1.2  */
 /*                                                                        */
 /**************************************************************************/
 
@@ -271,6 +277,8 @@ typedef struct MQTT_PACKET_DISCONNECT_STRUCT
 #define NXD_MQTT_CLIENT_NOT_RUNNING          0x1000E
 #define NXD_MQTT_INVALID_PACKET              0x1000F
 #define NXD_MQTT_PARTIAL_PACKET              0x10010
+#define NXD_MQTT_CONNECTING                  0x10011
+#define NXD_MQTT_INVALID_STATE               0x10012
 
 /* The following error codes match the Connect Return code in CONNACK message. */
 #define NXD_MQTT_ERROR_CONNECT_RETURN_CODE   0x10080
@@ -332,6 +340,8 @@ typedef struct NXD_MQTT_CLIENT_STRUCT
     VOID                         (*nxd_mqtt_disconnect_notify)(struct NXD_MQTT_CLIENT_STRUCT *client_ptr);
     UINT                         (*nxd_mqtt_packet_receive_notify)(struct NXD_MQTT_CLIENT_STRUCT *client_ptr, NX_PACKET *packet_ptr, VOID *context);
     VOID                          *nxd_mqtt_packet_receive_context;
+    VOID                         (*nxd_mqtt_ack_receive_notify)(struct NXD_MQTT_CLIENT_STRUCT *client_ptr, UINT type, USHORT packet_id, NX_PACKET *transmit_packet_ptr, VOID *context);
+    VOID                          *nxd_mqtt_ack_receive_context;
 #ifdef NX_SECURE_ENABLE
     UINT                           nxd_mqtt_client_use_tls;
     UINT                         (*nxd_mqtt_tls_setup)(struct NXD_MQTT_CLIENT_STRUCT *, NX_SECURE_TLS_SESSION *,
@@ -442,7 +452,7 @@ UINT _nxd_mqtt_client_receive_notify_set(NXD_MQTT_CLIENT *client_ptr,
                                          VOID (*receive_notify)(NXD_MQTT_CLIENT *client_ptr, UINT message_count));
 UINT _nxd_mqtt_client_release_callback_set(NXD_MQTT_CLIENT *client_ptr, VOID (*memory_release_function)(CHAR *, UINT));
 UINT _nxd_mqtt_client_sub_unsub(NXD_MQTT_CLIENT *client_ptr, UINT op,
-                                CHAR *topic_name, UINT topic_name_length, UINT QoS);
+                                CHAR *topic_name, UINT topic_name_length, USHORT *packet_id_ptr, UINT QoS);
 UINT _nxd_mqtt_client_subscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, UINT topic_name_length, UINT QoS);
 UINT _nxd_mqtt_client_unsubscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, UINT topic_name_length);
 UINT _nxd_mqtt_client_will_message_set(NXD_MQTT_CLIENT *client_ptr,

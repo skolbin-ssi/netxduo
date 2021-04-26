@@ -38,7 +38,7 @@ static const UCHAR _NX_CRYPTO_DER_OID_SHA_512_256[] =  {0x30, 0x31, 0x30, 0x0d, 
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_pkcs1_v1_5_sign                          PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -68,6 +68,8 @@ static const UCHAR _NX_CRYPTO_DER_OID_SHA_512_256[] =  {0x30, 0x31, 0x30, 0x0d, 
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT _nx_crypto_pkcs1_v1_5_sign(UCHAR *input, UINT input_length,
@@ -187,7 +189,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_pkcs1_v1_5_verify                        PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -217,6 +219,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT _nx_crypto_pkcs1_v1_5_verify(UCHAR *message, UINT message_length,
@@ -306,7 +310,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_pkcs1_v1_5_encode                        PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -335,6 +339,10 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s), improved */
+/*                                            buffer length verification, */
+/*                                            verified memcpy use cases,  */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT _nx_crypto_pkcs1_v1_5_encode(UCHAR *input, UINT input_length,
@@ -406,6 +414,10 @@ UINT status;
 
     /* Calculate our final signature length for later offset calculations. */
     signature_length = der_encoding_length + hash_length; /* DER encoding size + hash size = plaintext encoded signature length */
+    if (signature_length + 1 > expected_output_length)
+    {
+        return(NX_CRYPTO_SIZE_ERROR);
+    }
     output[expected_output_length - signature_length - 1] = 0;
 
     /* Get a working pointer into the padded signature buffer. All PKCS-1 encoded data
@@ -413,7 +425,7 @@ UINT status;
     working_ptr = &output[expected_output_length - signature_length];
 
     /* Copy in the DER encoding. */
-    NX_CRYPTO_MEMCPY(working_ptr, der_encoding, der_encoding_length);
+    NX_CRYPTO_MEMCPY(working_ptr, der_encoding, der_encoding_length); /* Use case of memcpy is verified. */
 
     /* Move the working pointer to the end of the DER encoding. */
     working_ptr += der_encoding_length;
@@ -443,7 +455,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_method_pkcs1_v1_5_init                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -479,6 +491,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT  _nx_crypto_method_pkcs1_v1_5_init(struct  NX_CRYPTO_METHOD_STRUCT *method,
@@ -519,7 +533,7 @@ NX_CRYPTO_KEEP UINT  _nx_crypto_method_pkcs1_v1_5_init(struct  NX_CRYPTO_METHOD_
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_method_pkcs1_v1_5_cleanup                PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -549,6 +563,8 @@ NX_CRYPTO_KEEP UINT  _nx_crypto_method_pkcs1_v1_5_init(struct  NX_CRYPTO_METHOD_
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT  _nx_crypto_method_pkcs1_v1_5_cleanup(VOID *crypto_metadata)
@@ -574,7 +590,7 @@ NX_CRYPTO_KEEP UINT  _nx_crypto_method_pkcs1_v1_5_cleanup(VOID *crypto_metadata)
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_method_pkcs1_operation                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -618,6 +634,8 @@ NX_CRYPTO_KEEP UINT  _nx_crypto_method_pkcs1_v1_5_cleanup(VOID *crypto_metadata)
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT _nx_crypto_method_pkcs1_v1_5_operation(UINT op,

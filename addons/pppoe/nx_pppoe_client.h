@@ -26,7 +26,7 @@
 /*  APPLICATION INTERFACE DEFINITION                       RELEASE        */ 
 /*                                                                        */ 
 /*    nx_pppoe_client.h                                   PORTABLE C      */  
-/*                                                           6.0          */
+/*                                                           6.1.3        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -42,6 +42,11 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
+/*  12-31-2020     Yuxin Zhou               Modified comment(s), improved */
+/*                                            string length verification, */
+/*                                            resulting in version 6.1.3  */
 /*                                                                        */
 /**************************************************************************/
 
@@ -226,7 +231,9 @@ typedef struct NX_PPPOE_CLIENT_STRUCT
     UINT                        nx_pppoe_state;
     NX_PPPOE_SERVER_SESSION     nx_pppoe_server_session;
     UCHAR                      *nx_pppoe_service_name;
+    UINT                        nx_pppoe_service_name_length;
     UCHAR                      *nx_pppoe_host_uniq;
+    UINT                        nx_pppoe_host_uniq_length;
     UCHAR                       nx_pppoe_ac_name[NX_PPPOE_CLIENT_MAX_AC_NAME_SIZE];
     UINT                        nx_pppoe_ac_name_size;
     UCHAR                       nx_pppoe_ac_cookie[NX_PPPOE_CLIENT_MAX_AC_COOKIE_SIZE];
@@ -349,4 +356,4 @@ VOID    _nx_pppoe_client_packet_deferred_receive(NX_PACKET *packet_ptr);
         }
 #endif
 
-#endif /* NX_PPP_CLIENT_H */ 
+#endif /* NX_PPPOE_CLIENT_H */ 

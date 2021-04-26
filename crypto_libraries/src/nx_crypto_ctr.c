@@ -27,7 +27,7 @@
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_ctr_xor                                  PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -59,11 +59,14 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s), disabled */
+/*                                            unaligned access by default,*/
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP static VOID _nx_crypto_ctr_xor(UCHAR *plaintext, UCHAR *key, UCHAR *ciphertext)
 {
-#ifndef NX_CRYPTO_DISABLE_UNALIGNED_ACCESS
+#ifdef NX_CRYPTO_ENABLE_UNALIGNED_ACCESS
 UINT *p = (UINT *)plaintext;
 UINT *c = (UINT *)ciphertext;
 UINT *k = (UINT *)key;
@@ -97,7 +100,7 @@ UINT *k = (UINT *)key;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_ctr_add_one                              PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -127,6 +130,8 @@ UINT *k = (UINT *)key;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP static VOID _nx_crypto_ctr_add_one(UCHAR *control_block)
@@ -151,7 +156,7 @@ USHORT result;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_ctr_encrypt                              PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -197,6 +202,9 @@ USHORT result;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            verified memcpy use cases,  */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT _nx_crypto_ctr_encrypt(VOID *crypto_metadata, NX_CRYPTO_CTR *ctr_metadata,
@@ -229,7 +237,7 @@ UINT   i;
     {
         crypto_function(crypto_metadata, control_block, aes_output, block_size);
         _nx_crypto_ctr_xor(&input[i], aes_output, aes_output);
-        NX_CRYPTO_MEMCPY(&output[i], aes_output, length - i);
+        NX_CRYPTO_MEMCPY(&output[i], aes_output, length - i); /* Use case of memcpy is verified. */
     }
 
 #ifdef NX_SECURE_KEY_CLEAR
@@ -244,7 +252,7 @@ UINT   i;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_ctr_encrypt_init                         PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -278,6 +286,9 @@ UINT   i;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            verified memcpy use cases,  */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT _nx_crypto_ctr_encrypt_init(NX_CRYPTO_CTR *ctr_metadata, UCHAR *iv, UINT iv_len,
@@ -297,8 +308,8 @@ UCHAR  *control_block = ctr_metadata -> nx_crypto_ctr_counter_block;
      */
     NX_CRYPTO_MEMSET(control_block, 0x0, 16);
     control_block[15] = 1;
-    NX_CRYPTO_MEMCPY(&control_block[4], iv, 8);
-    NX_CRYPTO_MEMCPY(&control_block[0], nonce, 4);
+    NX_CRYPTO_MEMCPY(&control_block[4], iv, 8); /* Use case of memcpy is verified. */
+    NX_CRYPTO_MEMCPY(&control_block[0], nonce, 4); /* Use case of memcpy is verified. */
 
     return(NX_CRYPTO_SUCCESS);
 }

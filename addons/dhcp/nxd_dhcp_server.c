@@ -55,7 +55,7 @@ static VOID        _nx_dhcp_fast_periodic_timer_entry(ULONG info);
 static UINT        _nx_dhcp_server_packet_process(NX_DHCP_SERVER *dhcp_ptr, NX_PACKET *packet_ptr);
 static UINT        _nx_dhcp_respond_to_client_message(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT *dhcp_client_ptr);
 static UINT        _nx_dhcp_server_extract_information(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT **dhcp_client_ptr, NX_PACKET *packet_ptr, UINT iface_index);
-static UINT        _nx_dhcp_process_option_data(NX_DHCP_CLIENT *dhcp_ptr, CHAR *buffer, ULONG value, UINT get_option_data, UINT size);
+static UINT        _nx_dhcp_process_option_data(NX_DHCP_CLIENT *dhcp_ptr, CHAR *buffer, UCHAR value, UINT get_option_data, UINT size);
 static UINT        _nx_dhcp_add_option(UCHAR *bootp_message, UINT option, UINT size, ULONG value, UINT *index);
 static UINT        _nx_dhcp_add_requested_option(NX_DHCP_SERVER *dhcp_ptr, UINT iface_index, UCHAR *buffer, UINT option, UINT *index);
 static UINT        _nx_dhcp_set_server_options(NX_DHCP_SERVER *dhcp_ptr, CHAR *buffer, UINT buffer_length);
@@ -100,7 +100,7 @@ static int  add_client = 0;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nxe_dhcp_server_create                             PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -135,6 +135,8 @@ static int  add_client = 0;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 
@@ -172,7 +174,7 @@ UINT    status;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_create                              PORTABLE C      */  
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -219,6 +221,9 @@ UINT    status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), improved */
+/*                                            buffer length verification, */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_dhcp_server_create(NX_DHCP_SERVER *dhcp_ptr, NX_IP *ip_ptr, VOID *stack_ptr, ULONG stack_size, 
@@ -246,7 +251,7 @@ UINT  i, j;
     dhcp_ptr -> nx_dhcp_packet_pool_ptr = packet_pool_ptr;
 
     /* Save the DHCP name.  */
-    memcpy(&dhcp_ptr -> nx_dhcp_name[0], name_ptr, NX_DHCP_SERVER_HOSTNAME_MAX);
+    dhcp_ptr -> nx_dhcp_name = name_ptr;
 
     /* Set the DHCP Server attributes.  */
     dhcp_ptr -> nx_dhcp_ip_ptr = ip_ptr;
@@ -440,7 +445,7 @@ UINT  i, j;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_fast_periodic_timer_entry                  PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -473,6 +478,8 @@ UINT  i, j;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID  _nx_dhcp_fast_periodic_timer_entry(ULONG info)
@@ -496,7 +503,7 @@ NX_DHCP_SERVER   *dhcp_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_slow_periodic_timer_entry                  PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -528,6 +535,8 @@ NX_DHCP_SERVER   *dhcp_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID  _nx_dhcp_slow_periodic_timer_entry(ULONG info)
@@ -551,7 +560,7 @@ NX_DHCP_SERVER                  *dhcp_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_socket_receive_notify               PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -583,6 +592,8 @@ NX_DHCP_SERVER                  *dhcp_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_dhcp_server_socket_receive_notify(NX_UDP_SOCKET *socket_ptr)
@@ -606,7 +617,7 @@ NX_DHCP_SERVER  *dhcp_server_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nxe_dhcp_server_delete                             PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -636,6 +647,8 @@ NX_DHCP_SERVER  *dhcp_server_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxe_dhcp_server_delete(NX_DHCP_SERVER *dhcp_ptr)
@@ -669,7 +682,7 @@ UINT    status;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_delete                              PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -705,6 +718,8 @@ UINT    status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_dhcp_server_delete(NX_DHCP_SERVER *dhcp_ptr)
@@ -756,7 +771,7 @@ UINT  _nx_dhcp_server_delete(NX_DHCP_SERVER *dhcp_ptr)
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nxe_dhcp_create_server_ip_address_list             PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -794,6 +809,8 @@ UINT  _nx_dhcp_server_delete(NX_DHCP_SERVER *dhcp_ptr)
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxe_dhcp_create_server_ip_address_list(NX_DHCP_SERVER *dhcp_ptr, UINT iface_index, 
@@ -829,7 +846,7 @@ UINT            status;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_create_server_ip_address_list              PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -881,6 +898,8 @@ UINT            status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_dhcp_create_server_ip_address_list(NX_DHCP_SERVER *dhcp_ptr, UINT iface_index, 
@@ -999,7 +1018,7 @@ NX_DHCP_INTERFACE_TABLE      *dhcp_interface_table_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nxe_dhcp_set_interface_network_parameters          PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1040,6 +1059,8 @@ NX_DHCP_INTERFACE_TABLE      *dhcp_interface_table_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxe_dhcp_set_interface_network_parameters(NX_DHCP_SERVER *dhcp_ptr, UINT iface_index, 
@@ -1074,7 +1095,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_set_interface_network_parameters           PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1112,6 +1133,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_dhcp_set_interface_network_parameters(NX_DHCP_SERVER *dhcp_ptr, UINT iface_index, 
@@ -1156,7 +1179,7 @@ UINT  _nx_dhcp_set_interface_network_parameters(NX_DHCP_SERVER *dhcp_ptr, UINT i
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nxe_dhcp_server_start                              PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1187,6 +1210,8 @@ UINT  _nx_dhcp_set_interface_network_parameters(NX_DHCP_SERVER *dhcp_ptr, UINT i
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxe_dhcp_server_start(NX_DHCP_SERVER *dhcp_ptr)
@@ -1220,7 +1245,7 @@ UINT    status;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_start                               PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1254,6 +1279,8 @@ UINT    status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_dhcp_server_start(NX_DHCP_SERVER *dhcp_ptr)
@@ -1308,7 +1335,7 @@ UINT  status;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nxe_dhcp_server_stop                               PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1338,6 +1365,8 @@ UINT  status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxe_dhcp_server_stop(NX_DHCP_SERVER *dhcp_ptr)
@@ -1371,7 +1400,7 @@ UINT    status;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_stop                                PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1405,6 +1434,8 @@ UINT    status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_dhcp_server_stop(NX_DHCP_SERVER *dhcp_ptr)
@@ -1460,7 +1491,7 @@ UINT    current_preemption;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_thread_entry                        PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1496,6 +1527,8 @@ UINT    current_preemption;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID  _nx_dhcp_server_thread_entry(ULONG info)
@@ -1712,7 +1745,7 @@ NX_PACKET                       *packet_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_respond_to_client_message                  PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1754,6 +1787,8 @@ NX_PACKET                       *packet_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_respond_to_client_message(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT *dhcp_client_ptr)
@@ -2023,7 +2058,7 @@ UINT                     index = 0;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_clear_client_session                       PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2062,6 +2097,8 @@ UINT                     index = 0;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_clear_client_session(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT *dhcp_client_ptr)
@@ -2101,7 +2138,7 @@ UINT i;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nxe_dhcp_clear_client_record                       PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2133,6 +2170,8 @@ UINT i;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxe_dhcp_clear_client_record(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT *dhcp_client_ptr)
@@ -2163,7 +2202,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_clear_client_record                        PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2201,6 +2240,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_dhcp_clear_client_record(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT *dhcp_client_ptr)
@@ -2269,7 +2310,7 @@ NX_DHCP_INTERFACE_TABLE  *iface_table_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_load_server_options                        PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2315,6 +2356,8 @@ NX_DHCP_INTERFACE_TABLE  *iface_table_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_load_server_options(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT *dhcp_client_ptr, UCHAR *buffer, UINT option_type, UINT *index)
@@ -2422,7 +2465,7 @@ UINT lease_time;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_set_default_server_options                 PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2458,6 +2501,8 @@ UINT lease_time;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_set_server_options(NX_DHCP_SERVER *dhcp_ptr, CHAR *buffer, UINT buffer_size)
@@ -2513,7 +2558,7 @@ CHAR *work_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_parse_next_option                          PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1.3        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2536,7 +2581,7 @@ CHAR *work_ptr;
 /*                                                                        */ 
 /*  CALLS                                                                 */ 
 /*                                                                        */ 
-/*    atoi                                 Convert ascii number to integer*/ 
+/*    _nx_utility_string_to_uint           Convert ascii number to integer*/
 /*                                                                        */ 
 /*  CALLED BY                                                             */ 
 /*                                                                        */ 
@@ -2547,6 +2592,11 @@ CHAR *work_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
+/*  12-31-2020     Yuxin Zhou               Modified comment(s), fixed    */
+/*                                            obsolescent functions,      */
+/*                                            resulting in version 6.1.3  */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_parse_next_option(CHAR **option_list, UINT *option, UINT length)
@@ -2609,10 +2659,8 @@ CHAR *buffer;
 
     *option_list += j;
 
-    /* Convert the number string to an actual integer. */
-    *option = (UINT) atoi(num_string);
-
-    return(NX_SUCCESS);
+    /* Convert the number string to an actual unsigned integer. */
+    return(_nx_utility_string_to_uint(num_string, buffer_index, option));
 }
 
 
@@ -2621,7 +2669,7 @@ CHAR *buffer;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_packet_process                      PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2664,6 +2712,8 @@ CHAR *buffer;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_server_packet_process(NX_DHCP_SERVER *dhcp_ptr, NX_PACKET *packet_ptr)
@@ -3068,7 +3118,7 @@ ULONG           offset;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_find_client_record_by_ip_address           PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3105,6 +3155,8 @@ ULONG           offset;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_dhcp_find_client_record_by_ip_address(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT **dhcp_client_ptr, 
@@ -3167,7 +3219,7 @@ NX_DHCP_CLIENT  *client_record_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_find_client_record_by_chaddr               PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3206,6 +3258,8 @@ NX_DHCP_CLIENT  *client_record_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_find_client_record_by_chaddr(NX_DHCP_SERVER *dhcp_ptr, UINT iface_index, ULONG client_mac_msw, 
@@ -3321,7 +3375,7 @@ NX_DHCP_CLIENT  *client_record_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_find_interface_table_ip_address            PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3358,6 +3412,8 @@ NX_DHCP_CLIENT  *client_record_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_find_interface_table_ip_address(NX_DHCP_SERVER *dhcp_ptr, UINT iface_index, ULONG ip_address, 
@@ -3399,7 +3455,7 @@ NX_DHCP_INTERFACE_TABLE *dhcp_interface_table_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_update_assignable_ip_address               PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3448,6 +3504,8 @@ NX_DHCP_INTERFACE_TABLE *dhcp_interface_table_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_update_assignable_ip_address(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT *dhcp_client_ptr, 
@@ -3551,7 +3609,7 @@ NX_DHCP_INTERFACE_IP_ADDRESS    *interface_address_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_find_ip_address_owner                      PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3589,6 +3647,8 @@ NX_DHCP_INTERFACE_IP_ADDRESS    *interface_address_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_find_ip_address_owner(NX_DHCP_INTERFACE_IP_ADDRESS *iface_owner, NX_DHCP_CLIENT *client_record_ptr, UINT *assigned_to_client)
@@ -3617,7 +3677,7 @@ static UINT  _nx_dhcp_find_ip_address_owner(NX_DHCP_INTERFACE_IP_ADDRESS *iface_
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_record_ip_address_owner                    PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3653,6 +3713,8 @@ static UINT  _nx_dhcp_find_ip_address_owner(NX_DHCP_INTERFACE_IP_ADDRESS *iface_
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_record_ip_address_owner(NX_DHCP_INTERFACE_IP_ADDRESS *iface_owner, NX_DHCP_CLIENT *client_record_ptr, UINT lease_time)
@@ -3692,7 +3754,7 @@ static UINT  _nx_dhcp_record_ip_address_owner(NX_DHCP_INTERFACE_IP_ADDRESS *ifac
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_clear_ip_address_owner                     PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3727,6 +3789,8 @@ static UINT  _nx_dhcp_record_ip_address_owner(NX_DHCP_INTERFACE_IP_ADDRESS *ifac
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_clear_ip_address_owner(NX_DHCP_INTERFACE_IP_ADDRESS *iface_owner)
@@ -3753,7 +3817,7 @@ static UINT  _nx_dhcp_clear_ip_address_owner(NX_DHCP_INTERFACE_IP_ADDRESS *iface
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_validate_client_message                    PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3789,6 +3853,8 @@ static UINT  _nx_dhcp_clear_ip_address_owner(NX_DHCP_INTERFACE_IP_ADDRESS *iface
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_validate_client_message(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT *dhcp_client_ptr)
@@ -4469,7 +4535,7 @@ NX_DHCP_INTERFACE_TABLE *dhcp_interface_table_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_assign_ip_address                   PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4521,6 +4587,8 @@ NX_DHCP_INTERFACE_TABLE *dhcp_interface_table_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_server_assign_ip_address(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT *dhcp_client_ptr)
@@ -4744,7 +4812,7 @@ UINT                            lease_time;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_extract_information                 PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4792,6 +4860,11 @@ UINT                            lease_time;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            fixed the issue of read     */
+/*                                            and write overflow,         */
+/*                                            fixed compiler warnings,    */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_server_extract_information(NX_DHCP_SERVER *dhcp_ptr, NX_DHCP_CLIENT **dhcp_client_ptr, 
@@ -4800,7 +4873,7 @@ static UINT  _nx_dhcp_server_extract_information(NX_DHCP_SERVER *dhcp_ptr, NX_DH
 
 UINT            status;
 ULONG           value;
-UINT            size;
+UINT            size = 0;
 ULONG           xid;
 UCHAR           *work_ptr;
 ULONG           client_mac_msw;
@@ -4975,7 +5048,7 @@ NX_DHCP_CLIENT  *temp_client_rec_ptr;
         {
 
             /* Guard against a missing "END" marker by checking if we are at the end of the DHCP packet data. */
-            if (work_ptr >= packet_ptr -> nx_packet_append_ptr)
+            if (work_ptr + 2 > packet_ptr -> nx_packet_append_ptr)
             {
 
                 /* Yes, Client must have sent a DHCP message with improperly terminated option 
@@ -4995,30 +5068,27 @@ NX_DHCP_CLIENT  *temp_client_rec_ptr;
             /* Move up the buffer pointer to the next option. */
             work_ptr++;
 
+            /* Validate the size. */
+            if (work_ptr + size > packet_ptr -> nx_packet_append_ptr)
+            {
+                return(NX_DHCP_IMPROPERLY_TERMINATED_OPTION);
+            }
 
             /* Is this the client ID option? */
             if (value != NX_DHCP_SERVER_OPTION_CLIENT_ID)
             {
 
-                /* No, process as any other option. */
-                _nx_dhcp_process_option_data(temp_client_rec_ptr, (CHAR *)work_ptr, value, NX_TRUE, size);
+                /* Check if there is enough space to store client requested options. */
+                if (temp_client_rec_ptr -> nx_dhcp_client_option_count < NX_DHCP_CLIENT_OPTIONS_MAX)
+                {
 
-                /* Move up the buffer pointer past the current option data size to the next option. */
-                work_ptr += size;
-            }
-            else
-            {
-
-                 work_ptr += size;
+                    /* Process as any other option. */
+                    _nx_dhcp_process_option_data(temp_client_rec_ptr, (CHAR *)work_ptr, (UCHAR)value, NX_TRUE, size);
+                }
             }
 
-            /* Check that we haven't exceeded the limit on Client option requests. */
-            if (temp_client_rec_ptr -> nx_dhcp_client_option_count >= NX_DHCP_CLIENT_OPTIONS_MAX)
-            {
-
-                /* We have. This is all we have room to process. */
-                break;
-            }
+            /* Move up the buffer pointer past the current option data size to the next option. */
+            work_ptr += size;
         }
     }
 
@@ -5034,7 +5104,7 @@ NX_DHCP_CLIENT  *temp_client_rec_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_get_option_data                            PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5064,27 +5134,30 @@ NX_DHCP_CLIENT  *temp_client_rec_ptr;
 /*                                                                        */ 
 /*    _nx_dhcp_server_get_data             Extract data from specified    */
 /*                                                  buffer location       */ 
+/*    memcpy                               Copy specified area of memory  */
 /*                                                                        */ 
 /*  CALLED BY                                                             */ 
 /*                                                                        */ 
-/*    _nx_dhcp_server_extract_information   Extract DHCP data from packet  */ 
+/*    _nx_dhcp_server_extract_information   Extract DHCP data from packet */ 
 /*                                                                        */ 
 /*  RELEASE HISTORY                                                       */ 
 /*                                                                        */ 
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            verified memcpy use cases,  */
+/*                                            fixed the issue of infinite */
+/*                                            recursion,                  */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
-static UINT  _nx_dhcp_process_option_data(NX_DHCP_CLIENT *dhcp_client_ptr, CHAR *buffer, ULONG option, UINT get_option_data, UINT size)
+static UINT  _nx_dhcp_process_option_data(NX_DHCP_CLIENT *dhcp_client_ptr, CHAR *buffer, UCHAR option, UINT get_option_data, UINT size)
 {
 
-CHAR  *temp_ptr;
 UINT  status;
 ULONG option_value = 0;
 
-
-    
     /* Do we parse option data for this option? */
     if (get_option_data)
     {
@@ -5142,7 +5215,7 @@ ULONG option_value = 0;
 
                 /* Clear the memory buffer before writing the host name to it. */
                 memset(&dhcp_client_ptr -> nx_dhcp_client_name[0], 0, NX_DHCP_CLIENT_HOSTNAME_MAX);
-                memcpy(&dhcp_client_ptr -> nx_dhcp_client_name[0], buffer, size);
+                memcpy(&dhcp_client_ptr -> nx_dhcp_client_name[0], buffer, size); /* Use case of memcpy is verified. */
             }
             dhcp_client_ptr -> nx_dhcp_client_option_count++;
             break;
@@ -5173,7 +5246,7 @@ ULONG option_value = 0;
 
         case 53:
             /* Message type */
-            dhcp_client_ptr -> nx_dhcp_user_options[dhcp_client_ptr -> nx_dhcp_client_option_count] = (UCHAR)option;
+            dhcp_client_ptr -> nx_dhcp_user_options[dhcp_client_ptr -> nx_dhcp_client_option_count] = option;
             dhcp_client_ptr -> nx_dhcp_message_type = (UCHAR)option_value;
             dhcp_client_ptr -> nx_dhcp_client_option_count++;
             break;
@@ -5192,25 +5265,16 @@ ULONG option_value = 0;
             break;
 
         case 55:
-            /* Option parameter list */
-            temp_ptr = buffer ;
 
-            /* Call this function to handle options within the option 55. */
-            while (size)
+            /* Check if there is enough space to store all the client requested options. */
+            if (dhcp_client_ptr -> nx_dhcp_client_option_count + size > NX_DHCP_CLIENT_OPTIONS_MAX)
             {
-
-                /* Get the next option in the Option parameter list. */
-                _nx_dhcp_server_get_data((UCHAR *)temp_ptr, 1, &option);
-
-                /* Update the client record with that option. */
-                _nx_dhcp_process_option_data(dhcp_client_ptr, temp_ptr, option, NX_FALSE, 1);
-
-                /* Move down the buffer containing the option parameter list data. */
-                temp_ptr++;
-
-                /* Update the amount of option data left for option 55. */
-                size--;
+                size = NX_DHCP_CLIENT_OPTIONS_MAX - dhcp_client_ptr -> nx_dhcp_client_option_count;
             }
+
+            /* Update the client record with that option. */
+            memcpy(&(dhcp_client_ptr -> nx_dhcp_user_options[dhcp_client_ptr -> nx_dhcp_client_option_count]), buffer, size); /* Use case of memcpy is verified. */
+            dhcp_client_ptr -> nx_dhcp_client_option_count += size;
             break;
 
         case 61:    
@@ -5240,7 +5304,7 @@ ULONG option_value = 0;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_add_requested_option                       PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5278,6 +5342,8 @@ ULONG option_value = 0;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_add_requested_option(NX_DHCP_SERVER *dhcp_ptr, UINT iface_index, UCHAR *buffer, UINT option, UINT *index)
@@ -5321,7 +5387,7 @@ UINT status = NX_SUCCESS;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_add_option                                 PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5355,6 +5421,8 @@ UINT status = NX_SUCCESS;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_add_option(UCHAR *dhcp_message, UINT option, UINT size, ULONG value, UINT *index)
@@ -5383,7 +5451,7 @@ static UINT  _nx_dhcp_add_option(UCHAR *dhcp_message, UINT option, UINT size, UL
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_get_data                            PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5421,6 +5489,8 @@ static UINT  _nx_dhcp_add_option(UCHAR *dhcp_message, UINT option, UINT size, UL
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT  _nx_dhcp_server_get_data(UCHAR *data, UINT size, ULONG *value)
@@ -5455,7 +5525,7 @@ static UINT  _nx_dhcp_server_get_data(UCHAR *data, UINT size, ULONG *value)
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_dhcp_server_store_data                          PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5491,6 +5561,8 @@ static UINT  _nx_dhcp_server_get_data(UCHAR *data, UINT size, ULONG *value)
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID  _nx_dhcp_server_store_data(UCHAR *data, UINT size, ULONG value)

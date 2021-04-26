@@ -29,7 +29,7 @@
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_tls_map_error_to_alert                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.6        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -68,6 +68,12 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            fixed renegotiation bug,    */
+/*                                            resulting in version 6.1    */
+/*  04-02-2021     Timothy Stapko           Modified comment(s),          */
+/*                                            updated X.509 return value, */
+/*                                            resulting in version 6.1.6  */
 /*                                                                        */
 /**************************************************************************/
 VOID _nx_secure_tls_map_error_to_alert(UINT error_number, UINT *alert_number, UINT *alert_level)
@@ -115,7 +121,9 @@ VOID _nx_secure_tls_map_error_to_alert(UINT error_number, UINT *alert_number, UI
     case NX_SECURE_TLS_SNI_EXTENSION_INVALID:
     case NX_SECURE_TLS_EMPTY_EC_GROUP:
     case NX_SECURE_TLS_EMPTY_EC_POINT_FORMAT:
-    case NX_SECURE_TLS_UNSUPPORTED_SIGNATURE_ALGORITHM: /* Deliberate fall-through. */
+    case NX_SECURE_TLS_UNSUPPORTED_SIGNATURE_ALGORITHM:
+    case NX_SECURE_TLS_RENEGOTIATION_SESSION_INACTIVE:
+    case NX_SECURE_TLS_RENEGOTIATION_EXTENSION_ERROR: /* Deliberate fall-through. */
         *alert_number = NX_SECURE_TLS_ALERT_HANDSHAKE_FAILURE;
         *alert_level = NX_SECURE_TLS_ALERT_LEVEL_FATAL;
         break;
@@ -130,6 +138,7 @@ VOID _nx_secure_tls_map_error_to_alert(UINT error_number, UINT *alert_number, UI
     case NX_SECURE_X509_WRONG_SIGNATURE_METHOD:
     case NX_SECURE_X509_INVALID_DATE_FORMAT:
     case NX_SECURE_X509_ASN1_LENGTH_TOO_LONG:
+    case NX_SECURE_X509_CERTIFICATE_NOT_FOUND:
     case NX_SECURE_X509_PKCS7_PARSING_FAILED:         /* Deliberate fall-through. */
         *alert_number = NX_SECURE_TLS_ALERT_BAD_CERTIFICATE;
         *alert_level = NX_SECURE_TLS_ALERT_LEVEL_FATAL;
@@ -201,7 +210,6 @@ VOID _nx_secure_tls_map_error_to_alert(UINT error_number, UINT *alert_number, UI
 
     /* Re-negotiation issues - the client may opt to decline a Hello Request message. */
     case NX_SECURE_TLS_NO_RENEGOTIATION_ERROR:
-    case NX_SECURE_TLS_RENEGOTIATION_SESSION_INACTIVE:
     case NX_SECURE_TLS_RENEGOTIATION_FAILURE:
         *alert_number = NX_SECURE_TLS_ALERT_NO_RENEGOTIATION;
         *alert_level = NX_SECURE_TLS_ALERT_LEVEL_WARNING;

@@ -15,17 +15,14 @@
 /**                                                                       */
 /** NetX Secure Component                                                 */
 /**                                                                       */
-/**    X509 Digital Certificates                                          */
+/**    X.509 Digital Certificates                                         */
 /**                                                                       */
 /**************************************************************************/
 /**************************************************************************/
 
 #define NX_SECURE_SOURCE_CODE
 
-#include "nx_secure_tls.h"
 #include "nx_secure_x509.h"
-#include <stdio.h>
-#include <string.h>
 
 #ifndef NX_SECURE_X509_DISABLE_CRL
 /* Helper functions. */
@@ -55,7 +52,7 @@ static UINT _nx_secure_x509_crl_extensions_parse(const UCHAR *buffer, ULONG leng
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_x509_certificate_revocation_list_parse   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.6        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -95,6 +92,11 @@ static UINT _nx_secure_x509_crl_extensions_parse(const UCHAR *buffer, ULONG leng
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
+/*  04-02-2021     Timothy Stapko           Modified comment(s),          */
+/*                                            removed dependency on TLS,  */
+/*                                            resulting in version 6.1.6  */
 /*                                                                        */
 /**************************************************************************/
 UINT _nx_secure_x509_certificate_revocation_list_parse(const UCHAR *buffer, UINT length,
@@ -223,7 +225,7 @@ UINT         status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_x509_crl_tbscert_list_parse              PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -269,6 +271,8 @@ UINT         status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nx_secure_x509_crl_tbscert_list_parse(const UCHAR *buffer, ULONG length,
@@ -413,7 +417,7 @@ UINT         status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_x509_crl_signature_algorithm_parse       PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -452,6 +456,8 @@ UINT         status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nx_secure_x509_crl_signature_algorithm_parse(const UCHAR *buffer, ULONG length,
@@ -465,7 +471,7 @@ const UCHAR *tlv_data;
 UINT         oid;
 ULONG        header_length;
 UINT         status;
-UCHAR        oid_found = NX_FALSE;
+UCHAR        oid_found = NX_CRYPTO_FALSE;
 
     /* The signature algorithm is a sequence of OIDs that is terminated by a NULL ASN.1 tag. */
     *bytes_processed = 0;
@@ -507,7 +513,7 @@ UCHAR        oid_found = NX_FALSE;
 
             crl -> nx_secure_x509_crl_signature_algorithm = (USHORT)oid;
 
-            oid_found = NX_TRUE;
+            oid_found = NX_CRYPTO_TRUE;
         }
         else if (tlv_type == NX_SECURE_ASN_TAG_NULL)
         {
@@ -522,7 +528,7 @@ UCHAR        oid_found = NX_FALSE;
         tlv_data = &tlv_data[tlv_length];
     }
 
-    if (oid_found == NX_TRUE)
+    if (oid_found == NX_CRYPTO_TRUE)
     {
         return(NX_SECURE_X509_SUCCESS);
     }
@@ -537,7 +543,7 @@ UCHAR        oid_found = NX_FALSE;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_x509_crl_signature_data_parse            PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -573,6 +579,8 @@ UCHAR        oid_found = NX_FALSE;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nx_secure_x509_crl_signature_data_parse(const UCHAR *buffer, ULONG length,
@@ -619,7 +627,7 @@ UINT         status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_x509_crl_version_parse                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -654,6 +662,8 @@ UINT         status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nx_secure_x509_crl_version_parse(const UCHAR *buffer, ULONG length,
@@ -701,7 +711,7 @@ UINT         status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_x509_crl_issuer_parse                    PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -739,6 +749,8 @@ UINT         status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nx_secure_x509_crl_issuer_parse(const UCHAR *buffer, ULONG length,
@@ -780,7 +792,7 @@ UINT         status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_x509_crl_update_times_parse              PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -816,6 +828,8 @@ UINT         status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nx_secure_x509_crl_update_times_parse(const UCHAR *buffer, ULONG length,
@@ -868,7 +882,7 @@ const UCHAR *current_buffer;
     /* The "nextUpdate" field is optional, so if we don't parse a time type here, that is OK. */
     if ((tlv_type != NX_SECURE_ASN_TAG_UTC_TIME && tlv_type != NX_SECURE_ASN_TAG_GENERALIZED_TIME) || tlv_type_class != NX_SECURE_ASN_TAG_CLASS_UNIVERSAL)
     {
-        crl -> nx_secure_x509_crl_next_update = NX_NULL;
+        crl -> nx_secure_x509_crl_next_update = NX_CRYPTO_NULL;
         crl -> nx_secure_x509_crl_next_update_length = 0;
         return(NX_SECURE_X509_SUCCESS);
     }
@@ -887,7 +901,7 @@ const UCHAR *current_buffer;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_x509_crl_revoked_certs_list_parse        PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -924,6 +938,8 @@ const UCHAR *current_buffer;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nx_secure_x509_crl_revoked_certs_list_parse(const UCHAR *buffer, ULONG length,
@@ -969,7 +985,7 @@ const UCHAR *current_buffer;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_x509_crl_extensions_parse                PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -1005,6 +1021,8 @@ const UCHAR *current_buffer;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nx_secure_x509_crl_extensions_parse(const UCHAR *buffer, ULONG length,
@@ -1022,8 +1040,8 @@ const UCHAR *current_buffer;
 ULONG        header_length;
 UINT         status;
 
-    NX_PARAMETER_NOT_USED(bytes_processed);
-    NX_PARAMETER_NOT_USED(crl);
+    NX_CRYPTO_PARAMETER_NOT_USED(bytes_processed);
+    NX_CRYPTO_PARAMETER_NOT_USED(crl);
 
     current_buffer = buffer;
 

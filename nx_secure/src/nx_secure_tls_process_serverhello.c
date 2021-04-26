@@ -32,7 +32,7 @@ extern const UCHAR _nx_secure_tls_hello_retry_request_random[32];
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_tls_process_serverhello                  PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -73,6 +73,11 @@ extern const UCHAR _nx_secure_tls_hello_retry_request_random[32];
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s), added    */
+/*                                            priority ciphersuite logic, */
+/*                                            verified memcpy use cases,  */
+/*                                            fixed renegotiation bug,    */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nx_secure_tls_process_serverhello(NX_SECURE_TLS_SESSION *tls_session, UCHAR *packet_buffer,
@@ -83,6 +88,7 @@ UCHAR                                 compression_method;
 USHORT                                version, total_extensions_length;
 UINT                                  status;
 USHORT                                ciphersuite;
+USHORT                                ciphersuite_priority;
 NX_SECURE_TLS_HELLO_EXTENSION         extension_data[NX_SECURE_TLS_HELLO_EXTENSIONS_MAX];
 UINT                                  num_extensions;
 #if (NX_SECURE_TLS_TLS_1_3_ENABLED)
@@ -106,6 +112,16 @@ NX_SECURE_TLS_SERVER_STATE            old_client_state = tls_session -> nx_secur
 
     /* Use our length as an index into the buffer. */
     length = 0;
+
+#if (NX_SECURE_TLS_TLS_1_3_ENABLED)
+    if (tls_session -> nx_secure_tls_1_3 && tls_session -> nx_secure_tls_local_session_active)
+    {
+
+        /* Client has negotiated TLS 1.3 and receives a ServerHello again.
+         * Send an unexpected message alert. */
+        return(NX_SECURE_TLS_UNEXPECTED_MESSAGE);
+    }
+#endif
 
     /* First two bytes of the server hello following the header are the TLS major and minor version numbers. */
     version = (USHORT)((packet_buffer[length] << 8) + packet_buffer[length + 1]);
@@ -143,7 +159,7 @@ NX_SECURE_TLS_SERVER_STATE            old_client_state = tls_session -> nx_secur
     {
             
         /* Set the Server random data, used in key generation. First 4 bytes is GMT time. */
-        NX_SECURE_MEMCPY(&tls_session -> nx_secure_tls_key_material.nx_secure_tls_server_random[0], &packet_buffer[length], NX_SECURE_TLS_RANDOM_SIZE);
+        NX_SECURE_MEMCPY(&tls_session -> nx_secure_tls_key_material.nx_secure_tls_server_random[0], &packet_buffer[length], NX_SECURE_TLS_RANDOM_SIZE); /* Use case of memcpy is verified. */
     }
     length += NX_SECURE_TLS_RANDOM_SIZE;
 
@@ -159,7 +175,7 @@ NX_SECURE_TLS_SERVER_STATE            old_client_state = tls_session -> nx_secur
     /* Session ID follows. */
     if (tls_session -> nx_secure_tls_session_id_length > 0)
     {
-        NX_SECURE_MEMCPY(tls_session -> nx_secure_tls_session_id, &packet_buffer[length], tls_session -> nx_secure_tls_session_id_length);
+        NX_SECURE_MEMCPY(tls_session -> nx_secure_tls_session_id, &packet_buffer[length], tls_session -> nx_secure_tls_session_id_length); /* Use case of memcpy is verified. */
         length += tls_session -> nx_secure_tls_session_id_length;
     }
 
@@ -168,7 +184,7 @@ NX_SECURE_TLS_SERVER_STATE            old_client_state = tls_session -> nx_secur
     length += 2;
 
     /* Find out the ciphersuite info of the chosen ciphersuite. */
-    status = _nx_secure_tls_ciphersuite_lookup(tls_session, ciphersuite, &tls_session -> nx_secure_tls_session_ciphersuite);
+    status = _nx_secure_tls_ciphersuite_lookup(tls_session, ciphersuite, &tls_session -> nx_secure_tls_session_ciphersuite, &ciphersuite_priority);
     if (status != NX_SUCCESS)
     {
 #if (NX_SECURE_TLS_TLS_1_3_ENABLED)
@@ -239,6 +255,31 @@ NX_SECURE_TLS_SERVER_STATE            old_client_state = tls_session -> nx_secur
             }
         }
     }
+
+#ifndef NX_SECURE_TLS_DISABLE_SECURE_RENEGOTIATION
+#ifdef NX_SECURE_TLS_REQUIRE_RENEGOTIATION_EXT
+#if (NX_SECURE_TLS_TLS_1_3_ENABLED)
+    if (!tls_session -> nx_secure_tls_1_3)
+#endif /* NX_SECURE_TLS_TLS_1_3_ENABLED */
+    {
+        if ((tls_session -> nx_secure_tls_renegotation_enabled) && (!tls_session -> nx_secure_tls_secure_renegotiation))
+        {
+
+            /* No "renegotiation_info" extension present, some clients may want to terminate the handshake. */
+            return(NX_SECURE_TLS_RENEGOTIATION_EXTENSION_ERROR);
+        }
+    }
+#endif /* NX_SECURE_TLS_REQUIRE_RENEGOTIATION_EXT */
+
+    if ((tls_session -> nx_secure_tls_local_session_active) && (!tls_session -> nx_secure_tls_secure_renegotiation_verified))
+    {
+
+        /* The client did not receive the "renegotiation_info" extension, the handshake must be aborted. */
+        return(NX_SECURE_TLS_RENEGOTIATION_EXTENSION_ERROR);
+    }
+
+    tls_session -> nx_secure_tls_secure_renegotiation_verified = NX_FALSE;
+#endif /* NX_SECURE_TLS_DISABLE_SECURE_RENEGOTIATION */
 
 #ifdef NX_SECURE_TLS_CLIENT_DISABLED
     /* If TLS Client is disabled and we have processed a ServerHello, something is wrong... */

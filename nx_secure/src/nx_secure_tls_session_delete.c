@@ -29,7 +29,7 @@
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_tls_session_delete                       PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -63,6 +63,11 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s), and      */
+/*                                            fixed race condition for    */
+/*                                            multithread transmission,   */
+/*                                            fixed underflow issue,      */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_secure_tls_session_delete(NX_SECURE_TLS_SESSION *tls_session)
@@ -104,10 +109,19 @@ UINT status;
             _nx_secure_tls_created_ptr = tls_session -> nx_secure_tls_created_next;
         }
     }
-    _nx_secure_tls_created_count--;
+
+    /* We shouldn't need this conditional but occasionally automated code may
+       call delete after all sessions have already been deleted. */
+    if(_nx_secure_tls_created_count > 0)
+    {
+        _nx_secure_tls_created_count--;
+    }
 
     /* Make sure the session is completely reset - set ID to zero for error checking. */
     tls_session -> nx_secure_tls_id = 0;
+
+    /* Delete the mutex used for TLS session while transmitting packets. */
+    tx_mutex_delete(&(tls_session -> nx_secure_tls_session_transmit_mutex));
 
     /* Release the protection. */
     tx_mutex_put(&_nx_secure_tls_protection);

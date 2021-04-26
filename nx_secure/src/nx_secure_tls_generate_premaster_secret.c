@@ -29,7 +29,7 @@
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_tls_generate_premaster_secret            PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -68,6 +68,10 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s), update   */
+/*                                            ECC find curve method,      */
+/*                                            verified memcpy use cases,  */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nx_secure_tls_generate_premaster_secret(NX_SECURE_TLS_SESSION *tls_session, UINT id)
@@ -117,7 +121,7 @@ NX_CRYPTO_EXTENDED_OUTPUT             extended_output;
         ec_pubkey = &server_certificate -> nx_secure_x509_public_key.ec_public_key;
 
         /* Find out which named curve the remote certificate is using. */
-        status = _nx_secure_tls_find_curve_method(tls_session, (USHORT)(ec_pubkey -> nx_secure_ec_named_curve), &curve_method_cert);
+        status = _nx_secure_tls_find_curve_method(tls_session, (USHORT)(ec_pubkey -> nx_secure_ec_named_curve), &curve_method_cert, NX_NULL);
 
         if(status != NX_SUCCESS)
         {
@@ -263,7 +267,7 @@ NX_CRYPTO_EXTENDED_OUTPUT             extended_output;
         tls_session -> nx_secure_tls_key_material.nx_secure_tls_pre_master_secret[index + 1] = (UCHAR)psk_length;
         index += 2;
 
-        NX_SECURE_MEMCPY(&tls_session -> nx_secure_tls_key_material.nx_secure_tls_pre_master_secret[index], psk_data, psk_length);
+        NX_SECURE_MEMCPY(&tls_session -> nx_secure_tls_key_material.nx_secure_tls_pre_master_secret[index], psk_data, psk_length); /* Use case of memcpy is verified. */
         index += psk_length;
 
         /* Save the pre-master secret size for later use. */

@@ -87,7 +87,7 @@ static VOID _nx_ftp_server_number_to_ascii(UCHAR *buffer_ptr, UINT buffer_size, 
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxe_ftp_server_create                              PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -128,6 +128,8 @@ static VOID _nx_ftp_server_number_to_ascii(UCHAR *buffer_ptr, UINT buffer_size, 
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxe_ftp_server_create(NX_FTP_SERVER *ftp_server_ptr, CHAR *ftp_server_name, NX_IP *ip_ptr, FX_MEDIA *media_ptr, VOID *stack_ptr, ULONG stack_size, NX_PACKET_POOL *pool_ptr,
@@ -171,7 +173,7 @@ UINT        status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_create                              PORTABLE C       */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -211,6 +213,8 @@ UINT        status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_ftp_server_create(NX_FTP_SERVER *ftp_server_ptr, CHAR *ftp_server_name, NX_IP *ip_ptr, FX_MEDIA *media_ptr, VOID *stack_ptr, ULONG stack_size, NX_PACKET_POOL *pool_ptr,
@@ -252,7 +256,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_ftp_server_create                             PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -294,6 +298,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxde_ftp_server_create(NX_FTP_SERVER *ftp_server_ptr, CHAR *ftp_server_name, NX_IP *ip_ptr, FX_MEDIA *media_ptr, VOID *stack_ptr, ULONG stack_size, NX_PACKET_POOL *pool_ptr,
@@ -324,7 +330,7 @@ UINT        status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_ftp_server_create                             PORTABLE C       */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -365,6 +371,8 @@ UINT        status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxd_ftp_server_create(NX_FTP_SERVER *ftp_server_ptr, CHAR *ftp_server_name, NX_IP *ip_ptr, FX_MEDIA *media_ptr, VOID *stack_ptr, ULONG stack_size, NX_PACKET_POOL *pool_ptr,
@@ -389,7 +397,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_create_internal                     PORTABLE C       */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -439,6 +447,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_ftp_server_create_internal(NX_FTP_SERVER *ftp_server_ptr, CHAR *ftp_server_name, NX_IP *ip_ptr, FX_MEDIA *media_ptr, VOID *stack_ptr, ULONG stack_size, NX_PACKET_POOL *pool_ptr,
@@ -589,7 +599,7 @@ UINT            status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxe_ftp_server_delete                              PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -620,6 +630,8 @@ UINT            status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxe_ftp_server_delete(NX_FTP_SERVER *ftp_server_ptr)
@@ -648,7 +660,7 @@ UINT    status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_delete                               PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -691,6 +703,8 @@ UINT    status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_ftp_server_delete(NX_FTP_SERVER *ftp_server_ptr)
@@ -782,7 +796,7 @@ NX_FTP_CLIENT_REQUEST      *client_request_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxe_ftp_server_start                               PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -813,6 +827,8 @@ NX_FTP_CLIENT_REQUEST      *client_request_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxe_ftp_server_start(NX_FTP_SERVER *ftp_server_ptr)
@@ -838,7 +854,7 @@ UINT    status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_start                                PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -872,6 +888,8 @@ UINT    status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_ftp_server_start(NX_FTP_SERVER *ftp_server_ptr)
@@ -913,7 +931,7 @@ ULONG   events;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxe_ftp_server_stop                                PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -944,6 +962,8 @@ ULONG   events;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nxe_ftp_server_stop(NX_FTP_SERVER *ftp_server_ptr)
@@ -972,7 +992,7 @@ UINT    status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_stop                                 PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1005,6 +1025,8 @@ UINT    status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_ftp_server_stop(NX_FTP_SERVER *ftp_server_ptr)
@@ -1083,7 +1105,7 @@ NX_FTP_CLIENT_REQUEST      *client_request_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_response                             PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1118,6 +1140,8 @@ NX_FTP_CLIENT_REQUEST      *client_request_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_response(NX_TCP_SOCKET *socket, NX_PACKET *packet_ptr, CHAR *reply_code, CHAR *message)
@@ -1189,7 +1213,7 @@ UINT    status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_directory_response                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1225,6 +1249,8 @@ UINT    status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_directory_response(NX_TCP_SOCKET *socket, NX_PACKET *packet_ptr, CHAR *reply_code, CHAR *message, CHAR *directory)
@@ -1358,7 +1384,7 @@ UINT    status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_thread_entry                         PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1398,6 +1424,8 @@ UINT    status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_thread_entry(ULONG ftp_server_address)
@@ -1495,7 +1523,7 @@ ULONG                   events;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_command_process                      PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.3        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1563,6 +1591,13 @@ ULONG                   events;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), improved */
+/*                                            packet length verification, */
+/*                                            verified memcpy use cases,  */
+/*                                            resulting in version 6.1    */
+/*  12-31-2020     Yuxin Zhou               Modified comment(s), improved */
+/*                                            packet length verification, */
+/*                                            resulting in version 6.1.3  */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_command_process(NX_FTP_SERVER *ftp_server_ptr)
@@ -1572,6 +1607,7 @@ VOID  _nx_ftp_server_command_process(NX_FTP_SERVER *ftp_server_ptr)
 #ifdef FEATURE_NX_IPV6  
 NXD_ADDRESS             ipduo_address;
 UINT                    port_size;
+CHAR                    temp_buffer[10];
 #endif
 #ifndef NX_DISABLE_IPV4
 ULONG                   connect_ip4_address = 0;
@@ -1909,6 +1945,18 @@ ULONG                   block_size;
                     break;
                 }
 
+                /* Check packet length.  */
+                if (packet_ptr -> nx_packet_length == 0)
+                {
+
+                    /* Empty message.  */
+
+                    /* Now send an error response to the client.  */
+                    _nx_ftp_server_response(&(client_req_ptr -> nx_ftp_client_request_control_socket), packet_ptr,
+                                NX_FTP_CODE_BAD_FILE, "File Open Fail");
+                    break;
+                }
+
                 /* Change to the default directory of this connection.  */
                 fx_directory_local_path_restore(ftp_server_ptr -> nx_ftp_server_media_ptr, &(client_req_ptr -> nx_ftp_client_local_path));
 
@@ -2190,6 +2238,18 @@ ULONG                   block_size;
                     break;
                 }
 
+                /* Check packet length.  */
+                if (packet_ptr -> nx_packet_length == 0)
+                {
+
+                    /* Empty message.  */
+
+                    /* Now send an error response to the client.  */
+                    _nx_ftp_server_response(&(client_req_ptr -> nx_ftp_client_request_control_socket), packet_ptr,
+                                NX_FTP_CODE_BAD_FILE, "File Open Failed");
+                    break;
+                }
+
                 /* Change to the default directory of this connection.  */
                 fx_directory_local_path_restore(ftp_server_ptr -> nx_ftp_server_media_ptr, &(client_req_ptr -> nx_ftp_client_local_path));
 
@@ -2368,6 +2428,18 @@ ULONG                   block_size;
 
             case NX_FTP_RNFR:
             {
+
+                /* Check packet length.  */
+                if (packet_ptr -> nx_packet_length == 0)
+                {
+
+                    /* Empty message.  */
+
+                    /* Now send an error response to the client.  */
+                    _nx_ftp_server_response(&(client_req_ptr -> nx_ftp_client_request_control_socket), packet_ptr,
+                                NX_FTP_CODE_BAD_FILE, "Rename File not found");
+                    break;
+                }
             
                 /* Change to the default directory of this connection.  */
                 fx_directory_local_path_restore(ftp_server_ptr -> nx_ftp_server_media_ptr, &(client_req_ptr -> nx_ftp_client_local_path));
@@ -2434,6 +2506,18 @@ ULONG                   block_size;
 
             case NX_FTP_RNTO:
             {
+
+                /* Check packet length.  */
+                if (packet_ptr -> nx_packet_length == 0)
+                {
+
+                    /* Empty message.  */
+
+                    /* Now send an error response to the client.  */
+                    _nx_ftp_server_response(&(client_req_ptr -> nx_ftp_client_request_control_socket), packet_ptr,
+                                NX_FTP_CODE_BAD_FILE, "Rename failed");
+                    break;
+                }
             
                 /* Change to the default directory of this connection.  */
                 fx_directory_local_path_restore(ftp_server_ptr -> nx_ftp_server_media_ptr, &(client_req_ptr -> nx_ftp_client_local_path));
@@ -2504,6 +2588,18 @@ ULONG                   block_size;
 
             case NX_FTP_DELE:
             {
+
+                /* Check packet length.  */
+                if (packet_ptr -> nx_packet_length == 0)
+                {
+
+                    /* Empty message.  */
+
+                    /* Now send an error response to the client.  */
+                    _nx_ftp_server_response(&(client_req_ptr -> nx_ftp_client_request_control_socket), packet_ptr,
+                                NX_FTP_CODE_BAD_FILE, "Delete Failed");
+                    break;
+                }
             
                 /* Change to the default directory of this connection.  */
                 fx_directory_local_path_restore(ftp_server_ptr -> nx_ftp_server_media_ptr, &(client_req_ptr -> nx_ftp_client_local_path));
@@ -2560,6 +2656,18 @@ ULONG                   block_size;
 
             case NX_FTP_RMD:
             {
+
+                /* Check packet length.  */
+                if (packet_ptr -> nx_packet_length == 0)
+                {
+
+                    /* Empty message.  */
+
+                    /* Now send an error response to the client.  */
+                    _nx_ftp_server_response(&(client_req_ptr -> nx_ftp_client_request_control_socket), packet_ptr,
+                                NX_FTP_CODE_BAD_FILE, "Delete Directory Fail");
+                    break;
+                }
             
                 /* Change to the default directory of this connection.  */
                 fx_directory_local_path_restore(ftp_server_ptr -> nx_ftp_server_media_ptr, &(client_req_ptr -> nx_ftp_client_local_path));
@@ -2622,6 +2730,18 @@ ULONG                   block_size;
 
             case NX_FTP_MKD:
             {
+
+                /* Check packet length.  */
+                if (packet_ptr -> nx_packet_length == 0)
+                {
+
+                    /* Empty message.  */
+
+                    /* Now send an error response to the client.  */
+                    _nx_ftp_server_response(&(client_req_ptr -> nx_ftp_client_request_control_socket), packet_ptr,
+                                NX_FTP_CODE_BAD_FILE, "Directory Create failed");
+                    break;
+                }
             
                 /* Change to the default directory of this connection.  */
                 fx_directory_local_path_restore(ftp_server_ptr -> nx_ftp_server_media_ptr, &(client_req_ptr -> nx_ftp_client_local_path));
@@ -2725,6 +2845,18 @@ ULONG                   block_size;
                                 NX_FTP_CODE_BAD_TYPE, "Only ASCII Listing allowed");
 
                     /* And we are done processing.  */
+                    break;
+                }
+
+                /* Check packet length.  */
+                if (packet_ptr -> nx_packet_length == 0)
+                {
+
+                    /* Empty message.  */
+
+                    /* Now send an error response to the client.  */
+                    _nx_ftp_server_response(&(client_req_ptr -> nx_ftp_client_request_control_socket), packet_ptr,
+                                NX_FTP_CODE_BAD_FILE, "List bad Directory");
                     break;
                 }
 
@@ -2984,7 +3116,7 @@ ULONG                   block_size;
                             }
 
                             /* Put the file name and cr/lf in the buffer*/
-                            memcpy(buffer_ptr, filename, length);
+                            memcpy(buffer_ptr, filename, length); /* Use case of memcpy is verified. */
                             buffer_ptr[length++] = '\r';
                             buffer_ptr[length++] = '\n';
 
@@ -3098,6 +3230,18 @@ ULONG                   block_size;
                                 NX_FTP_CODE_BAD_TYPE, "Only ASCII Listing allowed");
 
                     /* And we are done processing.  */
+                    break;
+                }
+
+                /* Check packet length.  */
+                if (packet_ptr -> nx_packet_length == 0)
+                {
+
+                    /* Empty message.  */
+
+                    /* Now send an error response to the client.  */
+                    _nx_ftp_server_response(&(client_req_ptr -> nx_ftp_client_request_control_socket), packet_ptr,
+                                NX_FTP_CODE_BAD_FILE, "Bad Directory");
                     break;
                 }
 
@@ -3431,13 +3575,13 @@ ULONG                   block_size;
                             buffer_ptr[0] = ((attributes & FX_DIRECTORY) ? 'd' : '-');
                             if (attributes & FX_READ_ONLY)
                             {
-                                memcpy(&buffer_ptr[1], "r--r--r--", 9);
+                                memcpy(&buffer_ptr[1], "r--r--r--", 9); /* Use case of memcpy is verified. */
                             }
                             else
                             {
-                                memcpy(&buffer_ptr[1], "rw-rw-rw-", 9);
+                                memcpy(&buffer_ptr[1], "rw-rw-rw-", 9); /* Use case of memcpy is verified. */
                             }
-                            memcpy(&buffer_ptr[10], "  1 owner group ", 16);
+                            memcpy(&buffer_ptr[10], "  1 owner group ", 16); /* Use case of memcpy is verified. */
                             _nx_ftp_server_number_to_ascii(&buffer_ptr[26], 10, size);
                             buffer_ptr[36] = ' ';
                             buffer_ptr[37] = (UCHAR)months[month - 1][0];
@@ -3450,7 +3594,7 @@ ULONG                   block_size;
                             buffer_ptr[46] = ':';
                             _nx_ftp_server_number_to_ascii(&buffer_ptr[47], 2, minute);
                             buffer_ptr[49] = ' ';
-                            memcpy(&buffer_ptr[50], filename, length);
+                            memcpy(&buffer_ptr[50], filename, length); /* Use case of memcpy is verified. */
                             length += 50;
                             buffer_ptr[length++] = '\r';
                             buffer_ptr[length++] = '\n';
@@ -3787,9 +3931,22 @@ ULONG                   block_size;
                 buffer_ptr =  packet_ptr -> nx_packet_prepend_ptr;
 
                 /* Now build PASV response. "227 Entering Passive Mode (h1,h2,h3,h4,p1,p2)."  */
+                
+                /* Verify packet payload.  */
+                if ((packet_ptr -> nx_packet_data_end - packet_ptr -> nx_packet_prepend_ptr) < 54)
+                {
+
+                    /* Delete data socket.  */
+                    nx_tcp_server_socket_unlisten(ftp_server_ptr -> nx_ftp_server_ip_ptr, port);
+                    nx_tcp_socket_delete(&(client_req_ptr -> nx_ftp_client_request_data_socket));
+
+                    /* Release the packet.  */
+                    nx_packet_release(packet_ptr);
+                    break;
+                }
 
                 /* Build the string. "227 Entering Passive Mode "  */
-                memcpy(buffer_ptr, "227 Entering Passive Mode ", 26);
+                memcpy(buffer_ptr, "227 Entering Passive Mode ", 26); /* Use case of memcpy is verified. */
 
                 /* Build the IP address and port.  */
                 buffer_ptr[26] = '(';
@@ -3991,8 +4148,24 @@ ULONG                   block_size;
 
                 /* Now build EPSV response. "229 Entering Extended Passive Mode (|||6446|)."  */
 
+                /* Get port size.  */
+                port_size = _nx_ftp_server_utility_fill_port_number(temp_buffer, port);
+                
+                /* Verify packet payload.  */
+                if ((ULONG)(packet_ptr -> nx_packet_data_end - packet_ptr -> nx_packet_prepend_ptr) < (43 + port_size))
+                {
+
+                    /* Delete data socket.  */
+                    nx_tcp_server_socket_unlisten(ftp_server_ptr -> nx_ftp_server_ip_ptr, port);
+                    nx_tcp_socket_delete(&(client_req_ptr -> nx_ftp_client_request_data_socket));
+
+                    /* Release the packet.  */
+                    nx_packet_release(packet_ptr);
+                    break;
+                }
+
                 /* Build the string. "229 Entering Extended Passive Mode "  */
-                memcpy(buffer_ptr, "229 Entering Extended Passive Mode ", 35);
+                memcpy(buffer_ptr, "229 Entering Extended Passive Mode ", 35); /* Use case of memcpy is verified. */
 
                 /* Build the IPv6 address and port.  */
                 buffer_ptr[35] = '(';
@@ -4000,7 +4173,7 @@ ULONG                   block_size;
                 buffer_ptr[37] = '|';
                 buffer_ptr[38] = '|';
 
-                port_size = _nx_ftp_server_utility_fill_port_number((CHAR*)(&buffer_ptr[39]), port);
+                memcpy(&buffer_ptr[39], temp_buffer, port_size); /* Use case of memcpy is verified. */
 
                 buffer_ptr[39 + port_size] = '|';
                 buffer_ptr[40 + port_size] = ')';
@@ -4051,6 +4224,9 @@ ULONG                   block_size;
                 /* If CDUP command, create the "up one directory" pathname string.  */
                 if (ftp_command == NX_FTP_CDUP)
                 {
+
+                    /* Move the pointer to make sure there is enough memory to store the data.  */
+                    buffer_ptr -= 3;
                     buffer_ptr[0] = '.';
                     buffer_ptr[1] = '.';
                     buffer_ptr[2] = NX_NULL;
@@ -4059,6 +4235,18 @@ ULONG                   block_size;
                 /* Otherwise CWD command, parse the pathname string.  */
                 else
                 {
+
+                    /* Check packet length.  */
+                    if (packet_ptr -> nx_packet_length == 0)
+                    {
+
+                        /* Empty message.  */
+
+                        /* Now send an error response to the client.  */
+                        _nx_ftp_server_response(&(client_req_ptr -> nx_ftp_client_request_control_socket), packet_ptr,
+                                    NX_FTP_CODE_BAD_FILE, "Change Dir Fail");
+                        break;
+                    }
 
                     /* Find the end of the message.  */
                     j =  0;
@@ -4245,7 +4433,7 @@ ULONG                   block_size;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_connect_process                      PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4281,6 +4469,8 @@ ULONG                   block_size;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_connect_process(NX_FTP_SERVER *ftp_server_ptr)
@@ -4401,7 +4591,7 @@ NX_FTP_CLIENT_REQUEST   *client_req_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_command_present                      PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4433,6 +4623,8 @@ NX_FTP_CLIENT_REQUEST   *client_req_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_command_present(NX_TCP_SOCKET *control_socket_ptr)
@@ -4454,7 +4646,7 @@ NX_FTP_SERVER   *server_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_connection_present                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4487,6 +4679,8 @@ NX_FTP_SERVER   *server_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_connection_present(NX_TCP_SOCKET *control_socket_ptr, UINT port)
@@ -4510,7 +4704,7 @@ NX_FTP_SERVER   *server_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_data_disconnect                      PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4542,6 +4736,8 @@ NX_FTP_SERVER   *server_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_data_disconnect(NX_TCP_SOCKET *data_socket_ptr)
@@ -4563,7 +4759,7 @@ NX_FTP_SERVER   *server_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_data_disconnect_process              PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4599,6 +4795,8 @@ NX_FTP_SERVER   *server_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_data_disconnect_process(NX_FTP_SERVER *ftp_server_ptr)
@@ -4712,7 +4910,7 @@ NX_FTP_CLIENT_REQUEST   *client_req_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_data_present                         PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4744,6 +4942,8 @@ NX_FTP_CLIENT_REQUEST   *client_req_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_data_present(NX_TCP_SOCKET *data_socket_ptr)
@@ -4765,7 +4965,7 @@ NX_FTP_SERVER   *server_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_data_process                         PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4800,6 +5000,8 @@ NX_FTP_SERVER   *server_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_data_process(NX_FTP_SERVER *ftp_server_ptr)
@@ -4917,7 +5119,7 @@ NX_FTP_CLIENT_REQUEST   *client_req_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_parse_command                        PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.3        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4949,6 +5151,11 @@ NX_FTP_CLIENT_REQUEST   *client_req_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
+/*  12-31-2020     Yuxin Zhou               Modified comment(s), improved */
+/*                                            packet length verification, */
+/*                                            resulting in version 6.1.3  */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_ftp_server_parse_command(NX_PACKET *packet_ptr)
@@ -4957,6 +5164,14 @@ UINT  _nx_ftp_server_parse_command(NX_PACKET *packet_ptr)
 UINT    i;
 char    *buffer_ptr;
 
+
+    /* Check packet length.  */
+    if (packet_ptr -> nx_packet_length == 0)
+    {
+
+        /* Empty message, just return INVALID.  */
+        return(NX_FTP_INVALID);
+    }
 
     /* Setup pointer to command buffer area.  */
     buffer_ptr =  (char *) packet_ptr -> nx_packet_prepend_ptr;
@@ -5129,7 +5344,7 @@ char    *buffer_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_timeout                              PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5162,6 +5377,8 @@ char    *buffer_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_timeout(ULONG ftp_server_address)
@@ -5183,7 +5400,7 @@ NX_FTP_SERVER   *server_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_timeout_processing                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5223,6 +5440,8 @@ NX_FTP_SERVER   *server_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_timeout_processing(NX_FTP_SERVER *ftp_server_ptr)
@@ -5328,7 +5547,7 @@ NX_FTP_CLIENT_REQUEST   *client_req_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_control_disconnect                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5360,6 +5579,8 @@ NX_FTP_CLIENT_REQUEST   *client_req_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_control_disconnect(NX_TCP_SOCKET *control_socket_ptr)
@@ -5381,7 +5602,7 @@ NX_FTP_SERVER   *server_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_control_disconnect_processing         PORTABLE C     */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5420,6 +5641,8 @@ NX_FTP_SERVER   *server_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_control_disconnect_processing(NX_FTP_SERVER *ftp_server_ptr)
@@ -5554,7 +5777,7 @@ NX_FTP_CLIENT_REQUEST   *client_req_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_packet_allocate                             PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5593,6 +5816,8 @@ NX_FTP_CLIENT_REQUEST   *client_req_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 
@@ -5631,7 +5856,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_utility_parse_IPv6_address                  PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.3        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5673,6 +5898,11 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
+/*  12-31-2020     Yuxin Zhou               Modified comment(s), improved */
+/*                                            colons count verification,  */
+/*                                            resulting in version 6.1.3  */
 /*                                                                        */
 /**************************************************************************/
 UINT _nx_ftp_utility_parse_IPv6_address(CHAR *buffer_ptr, UINT buffer_length, NXD_ADDRESS *ipduo_address)
@@ -5808,6 +6038,12 @@ ULONG  temp;
         else if (buffer_ptr[j] == ':')
         {
 
+            /* Check if colons is valid.  */
+            if (colons >= 7)
+            {
+                return NX_FTP_INVALID_ADDRESS;
+            }
+
             /* Increment the colon count. */
             colons++;
 
@@ -5873,6 +6109,12 @@ ULONG  temp;
                     m++;
                 }
                 
+                /* Check if colons is valid. */
+                if (actual_colons_left >= remaining_colons)
+                {
+                    return NX_FTP_INVALID_ADDRESS;
+                }
+
                 /* Compute the number of zeros to insert into the NXD_ADDRESS IPv6 ULONG array. */
                 number_consecutive_zeros_to_add = remaining_colons - actual_colons_left;
               
@@ -5967,7 +6209,7 @@ ULONG  temp;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_utility_parse_port_number                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -6008,6 +6250,8 @@ ULONG  temp;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 
@@ -6124,7 +6368,7 @@ UINT digits = 0;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_ftp_server_utility_fill_port_number             PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -6157,6 +6401,8 @@ UINT digits = 0;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_ftp_server_utility_fill_port_number(CHAR *buffer_ptr, UINT port_number)
@@ -6218,7 +6464,7 @@ UINT    size;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_ftp_server_block_size_get                       PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -6251,6 +6497,8 @@ UINT    size;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID  _nx_ftp_server_block_size_get(NX_FTP_SERVER *ftp_server_ptr, UINT ftp_command, CHAR *filename, ULONG *block_size)
@@ -6326,7 +6574,7 @@ UINT        status;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_ftp_server_block_header_send                    PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -6358,6 +6606,8 @@ UINT        status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_ftp_server_block_header_send(NX_PACKET_POOL *pool_ptr, NX_FTP_CLIENT_REQUEST *client_request_ptr, ULONG block_size)
@@ -6433,7 +6683,7 @@ UCHAR       *buffer_ptr;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_ftp_server_block_header_retrieve                PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -6464,6 +6714,8 @@ UCHAR       *buffer_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT  _nx_ftp_server_block_header_retrieve(NX_FTP_CLIENT_REQUEST *ftp_client_ptr, NX_PACKET *packet_ptr)
@@ -6614,7 +6866,7 @@ NX_PACKET   *last_packet;
 /*  FUNCTION                                               RELEASE        */ 
 /*                                                                        */ 
 /*    _nx_ftp_server_number_to_ascii                      PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -6648,6 +6900,8 @@ NX_PACKET   *last_packet;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nx_ftp_server_number_to_ascii(UCHAR *buffer_ptr, UINT buffer_size, UINT number)

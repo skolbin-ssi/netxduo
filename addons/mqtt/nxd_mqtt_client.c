@@ -65,7 +65,7 @@ static UINT _nxd_mqtt_client_connect_packet_send(NXD_MQTT_CLIENT *client_ptr, UL
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_set_fixed_header                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -105,6 +105,8 @@ static UINT _nxd_mqtt_client_connect_packet_send(NXD_MQTT_CLIENT *client_ptr, UL
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_set_fixed_header(NXD_MQTT_CLIENT *client_ptr, NX_PACKET *packet_ptr, UCHAR control_header, UINT length, UINT wait_option)
@@ -145,7 +147,7 @@ UINT   ret;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_read_remaining_length                     PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -185,6 +187,8 @@ UINT   ret;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_read_remaining_length(NX_PACKET *packet_ptr, UINT *remaining_length, ULONG *offset_ptr)
@@ -242,7 +246,7 @@ ULONG  bytes_copied;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_sub_unsub                          PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.2        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -261,6 +265,10 @@ ULONG  bytes_copied;
 /*                                            to subscribe to             */
 /*    topic_name_length                     Length of the topic string    */
 /*                                            in bytes                    */
+/*    packet_id_ptr                         Pointer to packet id that     */
+/*                                            will be filled with         */
+/*                                            assigned packet id for      */
+/*                                            sub/unsub message           */
 /*    QoS                                   Expected QoS level            */
 /*                                                                        */
 /*  OUTPUT                                                                */
@@ -289,10 +297,16 @@ ULONG  bytes_copied;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
+/*  11-09-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            added packet id parameter,  */
+/*                                            resulting in version 6.1.2  */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_sub_unsub(NXD_MQTT_CLIENT *client_ptr, UINT op,
-                                CHAR *topic_name, UINT topic_name_length, UINT QoS)
+                                CHAR *topic_name, UINT topic_name_length,
+                                USHORT *packet_id_ptr, UINT QoS)
 {
 
 
@@ -354,6 +368,11 @@ UCHAR               temp_data[2];
 
     temp_data[0] = (UCHAR)(client_ptr -> nxd_mqtt_client_packet_identifier >> 8);
     temp_data[1] = (client_ptr -> nxd_mqtt_client_packet_identifier &  0xFF);
+
+    if (packet_id_ptr)
+    {
+        *packet_id_ptr = (USHORT)(client_ptr -> nxd_mqtt_client_packet_identifier & 0xFFFF);
+    }
 
     /* Append packet ID. */
     ret = nx_packet_data_append(packet_ptr, temp_data, 2, client_ptr -> nxd_mqtt_client_packet_pool_ptr, NX_WAIT_FOREVER);
@@ -473,7 +492,7 @@ UCHAR               temp_data[2];
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_packet_allocate                           PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -518,6 +537,8 @@ UCHAR               temp_data[2];
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nxd_mqtt_packet_allocate(NXD_MQTT_CLIENT *client_ptr, NX_PACKET **packet_ptr)
@@ -562,7 +583,7 @@ UINT status = NXD_MQTT_SUCCESS;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_tcp_establish_notify                      PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -595,6 +616,8 @@ UINT status = NXD_MQTT_SUCCESS;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_tcp_establish_notify(NX_TCP_SOCKET *socket_ptr)
@@ -620,7 +643,7 @@ NXD_MQTT_CLIENT *client_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_receive_callback                          PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -656,6 +679,8 @@ NXD_MQTT_CLIENT *client_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_receive_callback(NX_TCP_SOCKET *socket_ptr)
@@ -680,7 +705,7 @@ NXD_MQTT_CLIENT *client_ptr;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_copy_transmit_packet                      PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -722,6 +747,8 @@ NXD_MQTT_CLIENT *client_ptr;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nxd_mqtt_copy_transmit_packet(NXD_MQTT_CLIENT *client_ptr, NX_PACKET *packet_ptr, NX_PACKET **new_packet_ptr,
@@ -756,7 +783,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_release_transmit_packet                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -795,6 +822,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_release_transmit_packet(NXD_MQTT_CLIENT *client_ptr, NX_PACKET *packet_ptr, NX_PACKET *previous_packet_ptr)
@@ -821,7 +850,7 @@ static VOID _nxd_mqtt_release_transmit_packet(NXD_MQTT_CLIENT *client_ptr, NX_PA
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_release_receive_packet                    PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -860,6 +889,8 @@ static VOID _nxd_mqtt_release_transmit_packet(NXD_MQTT_CLIENT *client_ptr, NX_PA
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_release_receive_packet(NXD_MQTT_CLIENT *client_ptr, NX_PACKET *packet_ptr, NX_PACKET *previous_packet_ptr)
@@ -887,7 +918,7 @@ static VOID _nxd_mqtt_release_receive_packet(NXD_MQTT_CLIENT *client_ptr, NX_PAC
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_process_connack                           PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -926,6 +957,8 @@ static VOID _nxd_mqtt_release_receive_packet(NXD_MQTT_CLIENT *client_ptr, NX_PAC
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nxd_mqtt_process_connack(NXD_MQTT_CLIENT *client_ptr, NX_PACKET *packet_ptr, ULONG wait_option)
@@ -1026,7 +1059,7 @@ MQTT_PACKET_CONNACK *connack_packet_ptr = (MQTT_PACKET_CONNACK *)(packet_ptr -> 
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_process_publish_packet                    PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1064,6 +1097,8 @@ MQTT_PACKET_CONNACK *connack_packet_ptr = (MQTT_PACKET_CONNACK *)(packet_ptr -> 
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_process_publish_packet(NX_PACKET *packet_ptr, ULONG *topic_offset_ptr, USHORT *topic_length_ptr,
@@ -1133,7 +1168,7 @@ ULONG  bytes_copied;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_process_publish                           PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1174,6 +1209,8 @@ ULONG  bytes_copied;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nxd_mqtt_process_publish(NXD_MQTT_CLIENT *client_ptr, NX_PACKET *packet_ptr)
@@ -1395,7 +1432,7 @@ ULONG                         bytes_copied;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_process_publish_response                  PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1432,6 +1469,9 @@ ULONG                         bytes_copied;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            added ack receive notify,   */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nxd_mqtt_process_publish_response(NXD_MQTT_CLIENT *client_ptr, NX_PACKET *packet_ptr)
@@ -1477,6 +1517,15 @@ USHORT                        transmit_packet_id;
                 /* Therefore we verify that packet contains PUBLISH packet with QoS level 1*/
                 if ((fixed_header & 0xF6) == ((MQTT_CONTROL_PACKET_TYPE_PUBLISH << 4) | MQTT_PUBLISH_QOS_LEVEL_1))
                 {
+
+                    /* Check ack notify function.  */
+                    if (client_ptr -> nxd_mqtt_ack_receive_notify)
+                    {
+
+                        /* Call notify function. Note: user routine should not release the packet.  */
+                        client_ptr -> nxd_mqtt_ack_receive_notify(client_ptr, MQTT_CONTROL_PACKET_TYPE_PUBACK, packet_id, transmit_packet_ptr, client_ptr -> nxd_mqtt_ack_receive_context);
+                    }
+
                     /* QoS Level1 message receives an ACK. */
                     /* This message can be released. */
                     _nxd_mqtt_release_transmit_packet(client_ptr, transmit_packet_ptr, previous_packet_ptr);
@@ -1549,6 +1598,14 @@ USHORT                        transmit_packet_id;
                         nx_packet_release(response_packet);
                     }
 
+                    /* Check ack notify function.  */
+                    if (client_ptr -> nxd_mqtt_ack_receive_notify)
+                    {
+
+                        /* Call notify function. Note: user routine should not release the packet.  */
+                        client_ptr -> nxd_mqtt_ack_receive_notify(client_ptr, MQTT_CONTROL_PACKET_TYPE_PUBREL, packet_id, transmit_packet_ptr, client_ptr -> nxd_mqtt_ack_receive_context);
+                    }
+
                     /* This packet can be released. */
                     _nxd_mqtt_release_transmit_packet(client_ptr, transmit_packet_ptr, previous_packet_ptr);
 
@@ -1572,7 +1629,7 @@ USHORT                        transmit_packet_id;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_process_sub_unsub_ack                     PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1609,6 +1666,9 @@ USHORT                        transmit_packet_id;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            added ack receive notify,   */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nxd_mqtt_process_sub_unsub_ack(NXD_MQTT_CLIENT *client_ptr, NX_PACKET *packet_ptr)
@@ -1665,6 +1725,14 @@ ULONG      bytes_copied;
                     return(1);
                 }
 
+                /* Check ack notify function.  */
+                if (client_ptr -> nxd_mqtt_ack_receive_notify)
+                {
+
+                    /* Call notify function. Note: user routine should not release the packet.  */
+                    client_ptr -> nxd_mqtt_ack_receive_notify(client_ptr, MQTT_CONTROL_PACKET_TYPE_SUBACK, packet_id, transmit_packet_ptr, client_ptr -> nxd_mqtt_ack_receive_context);
+                }
+
                 /* Release the transmit packet. */
                 _nxd_mqtt_release_transmit_packet(client_ptr, transmit_packet_ptr, previous_packet_ptr);
 
@@ -1678,6 +1746,14 @@ ULONG      bytes_copied;
                 {
                     /* Invalid remaining_length value. */
                     return(1);
+                }
+
+                /* Check ack notify function.  */
+                if (client_ptr -> nxd_mqtt_ack_receive_notify)
+                {
+
+                    /* Call notify function. Note: user routine should not release the packet.  */
+                    client_ptr -> nxd_mqtt_ack_receive_notify(client_ptr, MQTT_CONTROL_PACKET_TYPE_UNSUBACK, packet_id, transmit_packet_ptr, client_ptr -> nxd_mqtt_ack_receive_context);
                 }
 
                 /* Unsubscribe succeeded. */
@@ -1701,7 +1777,7 @@ ULONG      bytes_copied;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_process_pingresp                          PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1733,6 +1809,8 @@ ULONG      bytes_copied;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_process_pingresp(NXD_MQTT_CLIENT *client_ptr)
@@ -1756,7 +1834,7 @@ static VOID _nxd_mqtt_process_pingresp(NXD_MQTT_CLIENT *client_ptr)
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_process_disconnect                        PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1792,6 +1870,8 @@ static VOID _nxd_mqtt_process_pingresp(NXD_MQTT_CLIENT *client_ptr)
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_process_disconnect(NXD_MQTT_CLIENT *client_ptr)
@@ -1902,7 +1982,7 @@ UCHAR       fixed_header;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_packet_receive_process                    PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -1941,6 +2021,8 @@ UCHAR       fixed_header;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_packet_receive_process(NXD_MQTT_CLIENT *client_ptr)
@@ -2178,7 +2260,7 @@ ULONG      packet_length;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_tcp_establish_process                     PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2210,6 +2292,8 @@ ULONG      packet_length;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_tcp_establish_process(NXD_MQTT_CLIENT *client_ptr)
@@ -2272,7 +2356,7 @@ UINT       status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_tls_establish_process                     PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2304,6 +2388,8 @@ UINT       status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_tls_establish_process(NXD_MQTT_CLIENT *client_ptr)
@@ -2360,7 +2446,7 @@ UINT       status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_append_message                     PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2397,6 +2483,8 @@ UINT       status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_append_message(NXD_MQTT_CLIENT *client_ptr, NX_PACKET *packet_ptr, CHAR *message, UINT length, ULONG wait_option)
@@ -2431,7 +2519,7 @@ UCHAR len[2];
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_connection_end                     PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2467,6 +2555,8 @@ UCHAR len[2];
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 VOID _nxd_mqtt_client_connection_end(NXD_MQTT_CLIENT *client_ptr, ULONG wait_option)
@@ -2509,7 +2599,7 @@ static UINT _nxd_mqtt_send_simple_message(NXD_MQTT_CLIENT *client_ptr, UCHAR hea
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_periodic_timer_entry                      PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2543,6 +2633,8 @@ static UINT _nxd_mqtt_send_simple_message(NXD_MQTT_CLIENT *client_ptr, UCHAR hea
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_periodic_timer_entry(ULONG client)
@@ -2590,7 +2682,7 @@ NXD_MQTT_CLIENT *client_ptr = (NXD_MQTT_CLIENT *)client;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_event_process                      PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2630,6 +2722,9 @@ NXD_MQTT_CLIENT *client_ptr = (NXD_MQTT_CLIENT *)client;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            corrected mqtt client state,*/
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_client_event_process(VOID *mqtt_client, ULONG common_events, ULONG module_own_events)
@@ -2642,14 +2737,6 @@ NXD_MQTT_CLIENT *client_ptr = (NXD_MQTT_CLIENT *)mqtt_client;
 
     /* Process common events.  */
     NX_PARAMETER_NOT_USED(common_events);
-
-    /* Process module own events.  */
-    if (module_own_events & MQTT_START_EVENT)
-    {
-
-        /* Move MQTT Client state to STARTED */
-        client_ptr -> nxd_mqtt_client_state = NXD_MQTT_CLIENT_STATE_IDLE;
-    }
 
     if (module_own_events & MQTT_TIMEOUT_EVENT)
     {
@@ -2748,7 +2835,7 @@ NXD_MQTT_CLIENT *client_ptr = (NXD_MQTT_CLIENT *)mqtt_client;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_thread_entry                              PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2780,6 +2867,8 @@ NXD_MQTT_CLIENT *client_ptr = (NXD_MQTT_CLIENT *)mqtt_client;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _nxd_mqtt_thread_entry(ULONG mqtt_client)
@@ -2812,7 +2901,7 @@ ULONG            events;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _mqtt_client_disconnect_callback                    PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2846,6 +2935,8 @@ ULONG            events;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static VOID _mqtt_client_disconnect_callback(NX_TCP_SOCKET *socket_ptr)
@@ -2869,7 +2960,7 @@ NXD_MQTT_CLIENT *client_ptr = (NXD_MQTT_CLIENT *)(socket_ptr -> nx_tcp_socket_re
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_create                             PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -2911,6 +3002,9 @@ NXD_MQTT_CLIENT *client_ptr = (NXD_MQTT_CLIENT *)(socket_ptr -> nx_tcp_socket_re
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            corrected mqtt client state,*/
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_create(NXD_MQTT_CLIENT *client_ptr, CHAR *client_name,
@@ -2978,9 +3072,10 @@ UINT    status;
         return(NXD_MQTT_INTERNAL_ERROR);
     }
 
-    /* Set start event to start MQTT.  */
-    nx_cloud_module_event_set(&(client_ptr -> nxd_mqtt_client_cloud_module), MQTT_START_EVENT);
 #endif /* NXD_MQTT_CLOUD_ENABLE */
+
+    /* Update state.  */
+    client_ptr -> nxd_mqtt_client_state = NXD_MQTT_CLIENT_STATE_IDLE;
 
     /* Return.  */
     return(NXD_MQTT_SUCCESS);
@@ -2992,7 +3087,7 @@ UINT    status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_create_internal                    PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3036,6 +3131,9 @@ UINT    status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            corrected mqtt client state,*/
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nxd_mqtt_client_create_internal(NXD_MQTT_CLIENT *client_ptr, CHAR *client_name,
@@ -3129,14 +3227,10 @@ UINT                status;
     /* Record the client_ptr in the socket structure. */
     client_ptr -> nxd_mqtt_client_socket.nx_tcp_socket_reserved_ptr = (VOID *)client_ptr;
 
-    client_ptr -> nxd_mqtt_client_state = NXD_MQTT_CLIENT_STATE_INITIALIZE;
-
 #ifndef NXD_MQTT_CLOUD_ENABLE
     /* Start MQTT thread. */
-    tx_event_flags_set(&client_ptr -> nxd_mqtt_events, MQTT_START_EVENT, TX_OR);
     tx_thread_resume(&(client_ptr -> nxd_mqtt_thread));
 #endif /* NXD_MQTT_CLOUD_ENABLE */
-
     return(NXD_MQTT_SUCCESS);
 }
 
@@ -3146,7 +3240,7 @@ UINT                status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_login_set                          PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3188,6 +3282,8 @@ UINT                status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_login_set(NXD_MQTT_CLIENT *client_ptr,
@@ -3217,7 +3313,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_will_message_set                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3263,6 +3359,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_will_message_set(NXD_MQTT_CLIENT *client_ptr,
@@ -3306,7 +3404,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_will_message_set                  PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3350,6 +3448,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_will_message_set(NXD_MQTT_CLIENT *client_ptr,
@@ -3387,7 +3487,7 @@ UINT _nxde_mqtt_client_will_message_set(NXD_MQTT_CLIENT *client_ptr,
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_login_set                         PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3426,6 +3526,8 @@ UINT _nxde_mqtt_client_will_message_set(NXD_MQTT_CLIENT *client_ptr,
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_login_set(NXD_MQTT_CLIENT *client_ptr,
@@ -3453,7 +3555,7 @@ UINT _nxde_mqtt_client_login_set(NXD_MQTT_CLIENT *client_ptr,
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_retransmit_message                 PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3492,6 +3594,8 @@ UINT _nxde_mqtt_client_login_set(NXD_MQTT_CLIENT *client_ptr,
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nxd_mqtt_client_retransmit_message(NXD_MQTT_CLIENT *client_ptr, ULONG wait_option)
@@ -3571,7 +3675,7 @@ UCHAR               fixed_header;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_connect                            PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3629,6 +3733,11 @@ UCHAR               fixed_header;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            fixed return value when it  */
+/*                                            is set in CONNACK, corrected*/
+/*                                            mqtt client state,          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_connect(NXD_MQTT_CLIENT *client_ptr, NXD_ADDRESS *server_ip, UINT server_port,
@@ -3636,6 +3745,9 @@ UINT _nxd_mqtt_client_connect(NXD_MQTT_CLIENT *client_ptr, NXD_ADDRESS *server_i
 {
 NX_PACKET           *packet_ptr;
 UINT                 status;
+TX_THREAD           *thread_ptr;
+UINT                 new_priority;
+UINT                 old_priority;
 
 
     /* Obtain the mutex. */
@@ -3658,6 +3770,25 @@ UINT                 status;
     {
         tx_mutex_put(client_ptr -> nxd_mqtt_client_mutex_ptr);
         return(NXD_MQTT_ALREADY_CONNECTED);
+    }
+
+    /* Check if client is connecting. */
+    if (client_ptr -> nxd_mqtt_client_state == NXD_MQTT_CLIENT_STATE_CONNECTING)
+    {
+        tx_mutex_put(client_ptr -> nxd_mqtt_client_mutex_ptr);
+        return(NXD_MQTT_CONNECTING);
+    }
+
+    /* Client state must be in IDLE.  */
+    if (client_ptr -> nxd_mqtt_client_state != NXD_MQTT_CLIENT_STATE_IDLE)
+    {
+#ifdef NX_SECURE_ENABLE
+        if (client_ptr -> nxd_mqtt_client_use_tls)
+        {
+            nx_secure_tls_session_delete(&(client_ptr -> nxd_mqtt_tls_session));
+        }
+#endif /* NX_SECURE_ENABLE */
+        return(NXD_MQTT_INVALID_STATE);
     }
 
 #if defined(NX_SECURE_ENABLE) && defined(NXD_MQTT_REQUIRE_TLS)
@@ -3790,6 +3921,16 @@ UINT                 status;
         return(NX_IN_PROGRESS);
     }
 
+    /* Increase priority to the same of internal thread to avoid out of order packet process. */
+#ifndef NXD_MQTT_CLOUD_ENABLE
+    thread_ptr = &(client_ptr -> nxd_mqtt_thread);
+#else
+    thread_ptr = &(client_ptr -> nxd_mqtt_client_cloud_ptr -> nx_cloud_thread);
+#endif /* NXD_MQTT_CLOUD_ENABLE */
+    tx_thread_info_get(thread_ptr, NX_NULL, NX_NULL, NX_NULL, 
+                       &new_priority, NX_NULL, NX_NULL, NX_NULL, NX_NULL);
+    tx_thread_priority_change(tx_thread_identify(), new_priority, &old_priority);
+
     /* If TLS is enabled, start TLS */
 #ifdef NX_SECURE_ENABLE
     if (client_ptr -> nxd_mqtt_client_use_tls)
@@ -3799,6 +3940,9 @@ UINT                 status;
 
         if (status != NX_SUCCESS)
         {
+
+            /* Revert thread priority. */
+            tx_thread_priority_change(tx_thread_identify(), old_priority, &old_priority);
 
             /* End connection. */
             _nxd_mqtt_client_connection_end(client_ptr, NX_NO_WAIT);
@@ -3813,6 +3957,9 @@ UINT                 status;
 
     if (status != NX_SUCCESS)
     {
+
+        /* Revert thread priority. */
+        tx_thread_priority_change(tx_thread_identify(), old_priority, &old_priority);
 
         /* End connection. */
         _nxd_mqtt_client_connection_end(client_ptr, NX_NO_WAIT);
@@ -3832,6 +3979,9 @@ UINT                 status;
 #else
     status = nx_tcp_socket_receive(&client_ptr -> nxd_mqtt_client_socket, &packet_ptr, wait_option);
 #endif /* NX_SECURE_ENABLE */
+
+    /* Revert thread priority. */
+    tx_thread_priority_change(tx_thread_identify(), old_priority, &old_priority);
 
     /* Check status.  */
     if (status)
@@ -3864,7 +4014,7 @@ UINT                 status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_connect_packet_send                PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -3908,6 +4058,8 @@ UINT                 status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_connect_packet_send(NXD_MQTT_CLIENT *client_ptr, ULONG wait_option)
@@ -4113,7 +4265,7 @@ UINT                 keepalive = (client_ptr -> nxd_mqtt_keepalive/NX_IP_PERIODI
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_secure_connect                     PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4163,6 +4315,8 @@ UINT                 keepalive = (client_ptr -> nxd_mqtt_keepalive/NX_IP_PERIODI
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 #ifdef NX_SECURE_ENABLE
@@ -4199,7 +4353,7 @@ UINT ret;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_delete                             PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4234,6 +4388,8 @@ UINT ret;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_delete(NXD_MQTT_CLIENT *client_ptr)
@@ -4274,7 +4430,7 @@ UINT _nxd_mqtt_client_delete(NXD_MQTT_CLIENT *client_ptr)
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_publish_packet_send                PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4314,6 +4470,8 @@ UINT _nxd_mqtt_client_delete(NXD_MQTT_CLIENT *client_ptr)
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_publish_packet_send(NXD_MQTT_CLIENT *client_ptr, NX_PACKET *packet_ptr,
@@ -4401,7 +4559,7 @@ UINT       ret = NXD_MQTT_SUCCESS;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_publish                            PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4448,6 +4606,8 @@ UINT       ret = NXD_MQTT_SUCCESS;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_publish(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, UINT topic_name_length,
@@ -4608,7 +4768,7 @@ UINT       ret = NXD_MQTT_SUCCESS;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_subscribe                          PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.2        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4646,6 +4806,11 @@ UINT       ret = NXD_MQTT_SUCCESS;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
+/*  11-09-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            added packet id parameter,  */
+/*                                            resulting in version 6.1.2  */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_subscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, UINT topic_name_length, UINT QoS)
@@ -4657,7 +4822,7 @@ UINT _nxd_mqtt_client_subscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, U
     }
 
     return(_nxd_mqtt_client_sub_unsub(client_ptr, (MQTT_CONTROL_PACKET_TYPE_SUBSCRIBE << 4) | 0x02,
-                                      topic_name, topic_name_length, QoS));
+                                      topic_name, topic_name_length, NX_NULL, QoS));
 }
 
 
@@ -4668,7 +4833,7 @@ UINT _nxd_mqtt_client_subscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, U
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_unsubscribe                        PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.2        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4703,12 +4868,17 @@ UINT _nxd_mqtt_client_subscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, U
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
+/*  11-09-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            added packet id parameter,  */
+/*                                            resulting in version 6.1.2  */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_unsubscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, UINT topic_name_length)
 {
     return(_nxd_mqtt_client_sub_unsub(client_ptr, (MQTT_CONTROL_PACKET_TYPE_UNSUBSCRIBE << 4) | 0x02,
-                                      topic_name, topic_name_length, 0));
+                                      topic_name, topic_name_length, NX_NULL, 0));
 }
 
 /**************************************************************************/
@@ -4716,7 +4886,7 @@ UINT _nxd_mqtt_client_unsubscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name,
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_send_simple_message                       PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4756,6 +4926,8 @@ UINT _nxd_mqtt_client_unsubscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name,
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 static UINT _nxd_mqtt_send_simple_message(NXD_MQTT_CLIENT *client_ptr, UCHAR header_value)
@@ -4843,7 +5015,7 @@ UCHAR     *byte;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_disconnect                         PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4875,6 +5047,8 @@ UCHAR     *byte;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_disconnect(NXD_MQTT_CLIENT *client_ptr)
@@ -4913,7 +5087,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_receive_notify_set                 PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -4950,6 +5124,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_receive_notify_set(NXD_MQTT_CLIENT *client_ptr,
@@ -4970,7 +5146,7 @@ UINT _nxd_mqtt_client_receive_notify_set(NXD_MQTT_CLIENT *client_ptr,
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_message_get                        PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5016,6 +5192,9 @@ UINT _nxd_mqtt_client_receive_notify_set(NXD_MQTT_CLIENT *client_ptr,
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            fixed uninitialized value,  */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_message_get(NXD_MQTT_CLIENT *client_ptr, UCHAR *topic_buffer, UINT topic_buffer_size, UINT *actual_topic_length,
@@ -5053,6 +5232,10 @@ ULONG               message_length;
 
         if (status == NXD_MQTT_SUCCESS)
         {
+
+            /* Set topic and message lengths to avoid uninitialized value. */
+            *actual_topic_length = 0;
+            *actual_message_length = 0;
             nx_packet_data_extract_offset(packet_ptr, topic_offset, topic_buffer,
                                           topic_length, (ULONG *)actual_topic_length);
             nx_packet_data_extract_offset(packet_ptr, message_offset, message_buffer,
@@ -5073,7 +5256,7 @@ ULONG               message_length;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_create                            PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5115,6 +5298,8 @@ ULONG               message_length;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_create(NXD_MQTT_CLIENT *client_ptr, CHAR *client_name, CHAR *client_id, UINT client_id_length,
@@ -5142,7 +5327,7 @@ UINT _nxde_mqtt_client_create(NXD_MQTT_CLIENT *client_ptr, CHAR *client_name, CH
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_connect                           PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5181,6 +5366,9 @@ UINT _nxde_mqtt_client_create(NXD_MQTT_CLIENT *client_ptr, CHAR *client_name, CH
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            corrected mqtt client state,*/
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_connect(NXD_MQTT_CLIENT *client_ptr, NXD_ADDRESS *server_ip, UINT server_port,
@@ -5210,12 +5398,6 @@ UINT status;
         return(NX_INVALID_PORT);
     }
 
-
-    if (client_ptr -> nxd_mqtt_client_state == NXD_MQTT_CLIENT_STATE_INITIALIZE)
-    {
-        return(NXD_MQTT_CLIENT_NOT_RUNNING);
-    }
-
     status = _nxd_mqtt_client_connect(client_ptr, server_ip, server_port, keepalive, clean_session, wait_option);
 
     return(status);
@@ -5226,7 +5408,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_secure_connect                    PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5267,6 +5449,9 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            corrected mqtt client state,*/
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 #ifdef NX_SECURE_ENABLE
@@ -5294,11 +5479,6 @@ UINT status;
         return(NX_INVALID_PORT);
     }
 
-    if (client_ptr -> nxd_mqtt_client_state == NXD_MQTT_CLIENT_STATE_INITIALIZE)
-    {
-        return(NXD_MQTT_CLIENT_NOT_RUNNING);
-    }
-
     status = _nxd_mqtt_client_secure_connect(client_ptr, server_ip, server_port, tls_setup,
                                              keepalive, clean_session, wait_option);
 
@@ -5312,7 +5492,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_delete                            PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5344,6 +5524,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_delete(NXD_MQTT_CLIENT *client_ptr)
@@ -5368,7 +5550,7 @@ UINT status;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_publish                           PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5408,6 +5590,8 @@ UINT status;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_publish(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, UINT topic_name_length,
@@ -5446,7 +5630,7 @@ UINT _nxde_mqtt_client_publish(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, UI
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_subscribe                         PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5486,6 +5670,8 @@ UINT _nxde_mqtt_client_publish(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, UI
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_subscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, UINT topic_name_length, UINT QoS)
@@ -5521,7 +5707,7 @@ UINT _nxde_mqtt_client_subscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, 
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_unsubscribe                       PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5555,6 +5741,8 @@ UINT _nxde_mqtt_client_subscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, 
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_unsubscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name, UINT topic_name_length)
@@ -5580,7 +5768,7 @@ UINT _nxde_mqtt_client_unsubscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_disconnect                        PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5612,6 +5800,8 @@ UINT _nxde_mqtt_client_unsubscribe(NXD_MQTT_CLIENT *client_ptr, CHAR *topic_name
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_disconnect(NXD_MQTT_CLIENT *client_ptr)
@@ -5631,7 +5821,7 @@ UINT _nxde_mqtt_client_disconnect(NXD_MQTT_CLIENT *client_ptr)
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_message_get                       PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5673,6 +5863,8 @@ UINT _nxde_mqtt_client_disconnect(NXD_MQTT_CLIENT *client_ptr)
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_message_get(NXD_MQTT_CLIENT *client_ptr, UCHAR *topic_buffer, UINT topic_buffer_size, UINT *actual_topic_length,
@@ -5704,7 +5896,7 @@ UINT _nxde_mqtt_client_message_get(NXD_MQTT_CLIENT *client_ptr, UCHAR *topic_buf
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_receive_notify_set                PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5740,6 +5932,8 @@ UINT _nxde_mqtt_client_message_get(NXD_MQTT_CLIENT *client_ptr, UCHAR *topic_buf
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_receive_notify_set(NXD_MQTT_CLIENT *client_ptr,
@@ -5766,7 +5960,7 @@ UINT _nxde_mqtt_client_receive_notify_set(NXD_MQTT_CLIENT *client_ptr,
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_disconnect_notify_set              PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5800,6 +5994,8 @@ UINT _nxde_mqtt_client_receive_notify_set(NXD_MQTT_CLIENT *client_ptr,
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_disconnect_notify_set(NXD_MQTT_CLIENT *client_ptr, VOID (*disconnect_notify)(NXD_MQTT_CLIENT *))
@@ -5816,7 +6012,7 @@ UINT _nxd_mqtt_client_disconnect_notify_set(NXD_MQTT_CLIENT *client_ptr, VOID (*
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxde_mqtt_client_disconnect_notify_set             PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5850,6 +6046,8 @@ UINT _nxd_mqtt_client_disconnect_notify_set(NXD_MQTT_CLIENT *client_ptr, VOID (*
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxde_mqtt_client_disconnect_notify_set(NXD_MQTT_CLIENT *client_ptr, VOID (*disconnect_notify)(NXD_MQTT_CLIENT *))
@@ -5870,7 +6068,7 @@ UINT _nxde_mqtt_client_disconnect_notify_set(NXD_MQTT_CLIENT *client_ptr, VOID (
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nxd_mqtt_client_cloud_create                       PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -5908,6 +6106,9 @@ UINT _nxde_mqtt_client_disconnect_notify_set(NXD_MQTT_CLIENT *client_ptr, VOID (
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            corrected mqtt client state,*/
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nxd_mqtt_client_cloud_create(NXD_MQTT_CLIENT *client_ptr, CHAR *client_name, CHAR *client_id, UINT client_id_length,
@@ -5956,8 +6157,8 @@ UINT    status;
         return(NXD_MQTT_INTERNAL_ERROR);
     }
 
-    /* Set start event to start MQTT.  */
-    nx_cloud_module_event_set(&(client_ptr -> nxd_mqtt_client_cloud_module), MQTT_START_EVENT);
+    /* Update state.  */
+    client_ptr -> nxd_mqtt_client_state = NXD_MQTT_CLIENT_STATE_IDLE;
 
     return(NXD_MQTT_SUCCESS);
 }

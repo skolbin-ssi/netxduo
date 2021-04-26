@@ -31,7 +31,7 @@ static UCHAR _nx_secure_client_padded_pre_master[600];
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_tls_process_client_key_exchange          PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -76,6 +76,10 @@ static UCHAR _nx_secure_client_padded_pre_master[600];
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s), update   */
+/*                                            ECC find curve method,      */
+/*                                            verified memcpy use cases,  */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 UINT _nx_secure_tls_process_client_key_exchange(NX_SECURE_TLS_SESSION *tls_session,
@@ -205,7 +209,7 @@ UINT                                  private_key_length;
                 ec_privkey = &local_certificate -> nx_secure_x509_private_key.ec_private_key;
 
                 /* Find out which named curve the local certificate is using. */
-                status = _nx_secure_tls_find_curve_method(tls_session, (USHORT)(ec_privkey -> nx_secure_ec_named_curve), &curve_method);
+                status = _nx_secure_tls_find_curve_method(tls_session, (USHORT)(ec_privkey -> nx_secure_ec_named_curve), &curve_method, NX_NULL);
 
                 if(status != NX_SUCCESS)
                 {
@@ -220,7 +224,7 @@ UINT                                  private_key_length;
                 ecdhe_data = (NX_SECURE_TLS_ECDHE_HANDSHAKE_DATA *)tls_session -> nx_secure_tls_key_material.nx_secure_tls_new_key_material_data;
 
                 /* Find out which named curve the we are using. */
-                status = _nx_secure_tls_find_curve_method(tls_session, (USHORT)ecdhe_data -> nx_secure_tls_ecdhe_named_curve, &curve_method);
+                status = _nx_secure_tls_find_curve_method(tls_session, (USHORT)ecdhe_data -> nx_secure_tls_ecdhe_named_curve, &curve_method, NX_NULL);
 
                 if(status != NX_SUCCESS)
                 {
@@ -337,7 +341,7 @@ UINT                                  private_key_length;
                 {
                     length = sizeof(tls_session -> nx_secure_tls_key_material.nx_secure_tls_pre_master_secret);
                 }
-                NX_SECURE_MEMCPY(tls_session -> nx_secure_tls_key_material.nx_secure_tls_pre_master_secret, encrypted_pre_master_secret, length);
+                NX_SECURE_MEMCPY(tls_session -> nx_secure_tls_key_material.nx_secure_tls_pre_master_secret, encrypted_pre_master_secret, length); /* Use case of memcpy is verified. */
                 tls_session -> nx_secure_tls_key_material.nx_secure_tls_pre_master_secret_size = length;
             }
 
@@ -527,7 +531,7 @@ UINT                                  private_key_length;
                     /* Extract the 48 bytes of the actual pre-master secret from the data we just decrypted, stripping the padding, which
                        comes at the beginning of the decrypted block (the pre-master secret is the last 48 bytes. */
                     NX_SECURE_MEMCPY(tls_session -> nx_secure_tls_key_material.nx_secure_tls_pre_master_secret,
-                           &_nx_secure_client_padded_pre_master[length - NX_SECURE_TLS_RSA_PREMASTER_SIZE], NX_SECURE_TLS_RSA_PREMASTER_SIZE);
+                           &_nx_secure_client_padded_pre_master[length - NX_SECURE_TLS_RSA_PREMASTER_SIZE], NX_SECURE_TLS_RSA_PREMASTER_SIZE); /* Use case of memcpy is verified. */
                 }
                 tls_session -> nx_secure_tls_key_material.nx_secure_tls_pre_master_secret_size = NX_SECURE_TLS_RSA_PREMASTER_SIZE;
             }   /* End RSA-specific section. */

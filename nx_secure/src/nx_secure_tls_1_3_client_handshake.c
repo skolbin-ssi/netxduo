@@ -30,7 +30,7 @@
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_secure_tls_1_3_client_handshake                 PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.4        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -88,7 +88,7 @@
 /*    _nx_secure_tls_send_handshake_record  Send TLS handshake record     */
 /*    _nx_secure_tls_send_record            Send TLS records              */
 /*    _nx_secure_tls_session_keys_set       Set session keys              */
-/*    nx_packet_release                     Release packet                */
+/*    nx_secure_tls_packet_release          Release packet                */
 /*    [nx_secure_tls_session_renegotiation_callback]                      */
 /*                                          Renegotiation callback        */
 /*    tx_mutex_get                          Get protection mutex          */
@@ -103,6 +103,19 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            released packet securely,   */
+/*                                            fixed certificate buffer    */
+/*                                            allocation,                 */
+/*                                            resulting in version 6.1    */
+/*  12-31-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            improved buffer length      */
+/*                                            verification,               */
+/*                                            resulting in version 6.1.3  */
+/*  02-02-2021     Timothy Stapko           Modified comment(s), added    */
+/*                                            support for fragmented TLS  */
+/*                                            Handshake messages,         */
+/*                                            resulting in version 6.1.4  */
 /*                                                                        */
 /**************************************************************************/
 
@@ -136,8 +149,9 @@ UINT _nx_secure_tls_1_3_client_handshake(NX_SECURE_TLS_SESSION *tls_session, UCH
 #ifndef NX_SECURE_TLS_CLIENT_DISABLED
 UINT            status;
 USHORT          message_type = NX_SECURE_TLS_INVALID_MESSAGE;
-USHORT          header_bytes;
+UINT            header_bytes;
 UINT            message_length;
+UINT            packet_buffer_length = data_length;
 UCHAR          *packet_start;
 NX_PACKET      *send_packet = NX_NULL;
 NX_PACKET_POOL *packet_pool;
@@ -209,13 +223,24 @@ const UCHAR    *server_random;
          * so we can hash it. */
         packet_start = packet_buffer;
 
-        /* First, process the handshake message to get our state and any data therein. */
-        _nx_secure_tls_process_handshake_header(packet_buffer, &message_type, &header_bytes, &message_length);
+        header_bytes = data_length;
 
-        /* Check for fragmented records. */
+        /* First, process the handshake message to get our state and any data therein. */
+        status = _nx_secure_tls_process_handshake_header(packet_buffer, &message_type, &header_bytes, &message_length);
+
+        if (status != NX_SECURE_TLS_SUCCESS)
+        {
+            return(status);
+        }
+
+        /* Check for fragmented message. */
         if((message_length + header_bytes) > data_length)
         {
-            /* Incomplete record! We need to obtain the next fragment. */
+            /* Incomplete message! A single message is fragmented across several records. We need to obtain the next fragment. */
+            tls_session -> nx_secure_tls_handshake_record_expected_length = message_length + header_bytes;
+
+            tls_session -> nx_secure_tls_handshake_record_fragment_state = NX_SECURE_TLS_HANDSHAKE_RECEIVED_FRAGMENT;
+
             return(NX_SECURE_TLS_HANDSHAKE_FRAGMENT_RECEIVED);
         }
 
@@ -286,7 +311,7 @@ const UCHAR    *server_random;
             break;
         case NX_SECURE_TLS_CERTIFICATE_MSG:
             /* Server has sent its certificate message. */
-            status = _nx_secure_tls_process_remote_certificate(tls_session, packet_buffer, message_length);
+            status = _nx_secure_tls_process_remote_certificate(tls_session, packet_buffer, message_length, packet_buffer_length);
 
             if (status == NX_SUCCESS)
             {
@@ -381,7 +406,7 @@ const UCHAR    *server_random;
 
                 if (status != NX_SUCCESS)
                 {
-                    nx_packet_release(send_packet);
+                    nx_secure_tls_packet_release(send_packet);
                 }
             }
             return(error_number);
@@ -448,7 +473,7 @@ const UCHAR    *server_random;
             {
 
                 /* Release the protection. */
-                nx_packet_release(send_packet);
+                nx_secure_tls_packet_release(send_packet);
                 return(status);
             }
             break;
@@ -685,7 +710,7 @@ const UCHAR    *server_random;
 
                 if (status != NX_SUCCESS)
                 {
-                    nx_packet_release(send_packet);
+                    nx_secure_tls_packet_release(send_packet);
                 }
             }
 

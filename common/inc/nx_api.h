@@ -26,7 +26,7 @@
 /*  APPLICATION INTERFACE DEFINITION                       RELEASE        */
 /*                                                                        */
 /*    nx_api.h                                            PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1.6        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -45,6 +45,28 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), fixed    */
+/*                                            ThreadX version check,      */
+/*                                            updated product constants,  */
+/*                                            resulting in version 6.1    */
+/*  11-09-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            updated product constants,  */
+/*                                            resulting in version 6.1.2  */
+/*  12-31-2020     Yuxin Zhou               Modified comment(s), added    */
+/*                                            PTP timestamp capability,   */
+/*                                            added function to convert   */
+/*                                            string to unsigned integer, */
+/*                                            updated product constants,  */
+/*                                            resulting in version 6.1.3  */
+/*  02-02-2021     Yuxin Zhou               Modified comment(s), and      */
+/*                                            updated product constants,  */
+/*                                            resulting in version 6.1.4  */
+/*  03-02-2021     Yuxin Zhou               Modified comment(s), and      */
+/*                                            updated product constants,  */
+/*                                            resulting in version 6.1.5  */
+/*  04-02-2021     Yuxin Zhou               Modified comment(s), and      */
+/*                                            added functions for base64, */
+/*                                            resulting in version 6.1.6  */
 /*                                                                        */
 /**************************************************************************/
 
@@ -91,7 +113,7 @@ extern   "C" {
 #include "tx_trace.h"
 
 /* Define symbols for compatibility before and after ThreadX 5.8. */
-#if (((THREADX_MAJOR_VERSION << 16) | THREADX_MINOR_VERSION) >= 0x0508)
+#if (((THREADX_MAJOR_VERSION << 8) | THREADX_MINOR_VERSION) >= 0x0508)
 #define NX_CLEANUP_PARAMETER , ULONG suspension_sequence
 #define NX_CLEANUP_ARGUMENT  , 0
 #define NX_CLEANUP_EXTENSION NX_PARAMETER_NOT_USED(suspension_sequence);
@@ -99,7 +121,7 @@ extern   "C" {
 #define NX_CLEANUP_PARAMETER
 #define NX_CLEANUP_ARGUMENT
 #define NX_CLEANUP_EXTENSION
-#endif /* (((THREADX_MAJOR_VERSION << 16) | THREADX_MINOR_VERSION) >= 0x0508) */
+#endif /* (((THREADX_MAJOR_VERSION << 8) | THREADX_MINOR_VERSION) >= 0x0508) */
 
 /* Define the get system state macro. By default, it simply maps to the variable _tx_thread_system_state.  */
 #ifndef TX_THREAD_GET_SYSTEM_STATE
@@ -449,11 +471,13 @@ VOID _nx_trace_event_update(TX_TRACE_BUFFER_ENTRY *event, ULONG timestamp, ULONG
 
 
 /* Define basic constants for the NetX TCP/IP Stack.  */
-#define EL_PRODUCT_NETXDUO
+#define AZURE_RTOS_NETXDUO
 #define NETXDUO_MAJOR_VERSION                    6
-#define NETXDUO_MINOR_VERSION                    0
+#define NETXDUO_MINOR_VERSION                    1
+#define NETXDUO_PATCH_VERSION                    6
 
-/* Define the following symbosl for backward compatibility */
+/* Define the following symbols for backward compatibility */
+#define EL_PRODUCT_NETXDUO
 #define __PRODUCT_NETXDUO__
 #define __NETXDUO_MAJOR_VERSION__                NETXDUO_MAJOR_VERSION
 #define __NETXDUO_MINOR_VERSION__                NETXDUO_MINOR_VERSION
@@ -1292,6 +1316,7 @@ typedef struct NX_IPV6_DEFAULT_ROUTER_ENTRY_STRUCT
 #define NX_INTERFACE_CAPABILITY_ICMPV6_TX_CHECKSUM 0x00000200
 #define NX_INTERFACE_CAPABILITY_IGMP_TX_CHECKSUM   0x00000400
 #define NX_INTERFACE_CAPABILITY_IGMP_RX_CHECKSUM   0x00000800
+#define NX_INTERFACE_CAPABILITY_PTP_TIMESTAMP      0x00001000
 #endif /* NX_ENABLE_INTERFACE_CAPABILITY */
 
 #define NX_IP_VERSION_V4                           0x4
@@ -3794,6 +3819,9 @@ VOID _nx_ip_driver_link_status_event(NX_IP *ip_ptr, UINT interface_index);
 
 /* Utility functions.  */
 UINT _nx_utility_string_length_check(CHAR *input_string, UINT *string_length, UINT max_string_length);
+UINT _nx_utility_string_to_uint(CHAR *input_string, UINT string_length, UINT *number);
+UINT _nx_utility_base64_encode(UCHAR *name, UINT name_size, UCHAR *base64name, UINT base64name_size, UINT *bytes_copied);
+UINT _nx_utility_base64_decode(UCHAR *base64name, UINT base64name_size, UCHAR *name, UINT name_size, UINT *bytes_copied);
 
 /* Determine if a C++ compiler is being used.  If so, complete the standard
    C conditional started above.  */

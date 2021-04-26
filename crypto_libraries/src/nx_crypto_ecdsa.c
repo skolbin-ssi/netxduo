@@ -28,7 +28,7 @@
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_ecdsa_sign                               PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -69,6 +69,9 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            verified memmove use cases, */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT _nx_crypto_ecdsa_sign(NX_CRYPTO_EC *curve, UCHAR *hash, UINT hash_length,
@@ -239,7 +242,7 @@ UCHAR                *signature_s;
     }
 
     /* Setup r. */
-    NX_CRYPTO_MEMMOVE(&signature[2 + pad_zero_r], signature_r, r_size);
+    NX_CRYPTO_MEMMOVE(&signature[2 + pad_zero_r], signature_r, r_size); /* Use case of memmove is verified. */
     signature[0] = 0x02;    /* Integer */
     signature[1] = (UCHAR)(r_size + pad_zero_r);
     if (pad_zero_r)
@@ -249,7 +252,7 @@ UCHAR                *signature_s;
     signature += (2u + pad_zero_r + r_size);
 
     /* Setup s. */
-    NX_CRYPTO_MEMMOVE(&signature[2 + pad_zero_s], signature_s, s_size);
+    NX_CRYPTO_MEMMOVE(&signature[2 + pad_zero_s], signature_s, s_size); /* Use case of memmove is verified. */
     signature[0] = 0x02;    /* Integer */
     signature[1] = (UCHAR)(s_size + pad_zero_s);
     if (pad_zero_s)
@@ -265,7 +268,7 @@ UCHAR                *signature_s;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_ecdsa_verify                             PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -304,6 +307,10 @@ UCHAR                *signature_s;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s), and      */
+/*                                            fixed input validation,     */
+/*                                            added public key validation,*/
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT _nx_crypto_ecdsa_verify(NX_CRYPTO_EC *curve, UCHAR *hash, UINT hash_length,
@@ -375,6 +382,14 @@ UINT                  buffer_size = curve -> nx_crypto_ec_n.nx_crypto_huge_buffe
         return(status);
     }
 
+#ifndef NX_CRYPTO_ECC_DISABLE_KEY_VALIDATION
+    status = _nx_crypto_ec_validate_public_key(&pubkey, curve, NX_CRYPTO_FALSE, scratch);
+    if (status != NX_CRYPTO_SUCCESS)
+    {
+        return(status);
+    }
+#endif /* NX_CRYPTO_ECC_DISABLE_KEY_VALIDATION */
+
     if (signature_length < (signature[1] + 2u))
     {
         return(NX_CRYPTO_SIZE_ERROR);
@@ -399,6 +414,22 @@ UINT                  buffer_size = curve -> nx_crypto_ec_n.nx_crypto_huge_buffe
     if (status != NX_CRYPTO_SUCCESS)
     {
         return(status);
+    }
+
+    /* r and s must be in the range [1..n-1] */
+    if(_nx_crypto_huge_number_is_zero(&r) || _nx_crypto_huge_number_is_zero(&s))
+    {
+        return(NX_CRYPTO_NOT_SUCCESSFUL);
+    }
+
+    if(NX_CRYPTO_HUGE_NUMBER_LESS != _nx_crypto_huge_number_compare_unsigned(&r, &curve -> nx_crypto_ec_n))
+    {
+        return(NX_CRYPTO_NOT_SUCCESSFUL);
+    }
+
+    if(NX_CRYPTO_HUGE_NUMBER_LESS != _nx_crypto_huge_number_compare_unsigned(&s, &curve -> nx_crypto_ec_n))
+    {
+        return(NX_CRYPTO_NOT_SUCCESSFUL);
     }
 
     /* Truncate the hash data to the size of group order. */
@@ -450,7 +481,7 @@ UINT                  buffer_size = curve -> nx_crypto_ec_n.nx_crypto_huge_buffe
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_method_ecdsa_init                        PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -486,6 +517,8 @@ UINT                  buffer_size = curve -> nx_crypto_ec_n.nx_crypto_huge_buffe
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT  _nx_crypto_method_ecdsa_init(struct  NX_CRYPTO_METHOD_STRUCT *method,
@@ -533,7 +566,7 @@ NX_CRYPTO_ECDSA *ecdsa;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_method_ecdsa_cleanup                     PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -563,6 +596,8 @@ NX_CRYPTO_ECDSA *ecdsa;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT  _nx_crypto_method_ecdsa_cleanup(VOID *crypto_metadata)
@@ -589,7 +624,7 @@ NX_CRYPTO_KEEP UINT  _nx_crypto_method_ecdsa_cleanup(VOID *crypto_metadata)
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_method_ecdsa_operation                   PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -633,6 +668,8 @@ NX_CRYPTO_KEEP UINT  _nx_crypto_method_ecdsa_cleanup(VOID *crypto_metadata)
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT _nx_crypto_method_ecdsa_operation(UINT op,

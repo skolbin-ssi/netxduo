@@ -23,10 +23,10 @@
 
 /**************************************************************************/ 
 /*                                                                        */ 
-/*  APPLICATION INTERFACE DEFINITION                       RELEASE        */ 
+/*  APPLICATION INTERFACE DEFINITION                       RELEASE        */  
 /*                                                                        */   
 /*    nxd_dhcp_server.h                                   PORTABLE C      */ 
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Yuxin Zhou, Microsoft Corporation                                   */
@@ -43,6 +43,12 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Yuxin Zhou               Initial Version 6.0           */
+/*  09-30-2020     Yuxin Zhou               Modified comment(s), and      */
+/*                                            modified the type of        */
+/*                                            nx_dhcp_user_options,       */
+/*                                            improved buffer length      */
+/*                                            verification,               */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 
@@ -444,7 +450,7 @@ typedef struct NX_DHCP_CLIENT_STRUCT
     UINT            nx_dhcp_client_hwtype;       /* Client interface hardware type e.g. Ethernet. */
     ULONG           nx_dhcp_broadcast_flag_set;  /* Parse broadcast flags from DHCP messages. */
     UINT            nx_dhcp_client_option_count; /* Number of user options in client request */ 
-    UINT            nx_dhcp_user_options[NX_DHCP_CLIENT_OPTIONS_MAX];   
+    UCHAR           nx_dhcp_user_options[NX_DHCP_CLIENT_OPTIONS_MAX];   
     ULONG           nx_dhcp_session_timeout;     /* Time out on waiting for client's next response */
     UINT            nx_dhcp_response_type_to_client; 
                                                  /* DHCP code for response to send back to client. */
@@ -486,9 +492,8 @@ typedef struct NX_DHCP_INTERFACE_TABLE_STRUCT
 
 typedef struct NX_DHCP_SERVER_STRUCT 
 {
-    ULONG           nx_dhcp_id;                     /* DHCP thread ID    */
-    CHAR            nx_dhcp_name[NX_DHCP_SERVER_HOSTNAME_MAX];
-                                                    /* DHCP server name buffer */ 
+    ULONG           nx_dhcp_id;                     /* DHCP thread ID */
+    CHAR           *nx_dhcp_name;                   /* DHCP server name */
     NX_PACKET_POOL *nx_dhcp_packet_pool_ptr;        /* Pointer to DHCP server packet pool */
     TX_TIMER        nx_dhcp_slow_periodic_timer;    /* Timer for watching IP lease time outs. */
     TX_TIMER        nx_dhcp_fast_periodic_timer;    /* Timer for watching session time outs. */

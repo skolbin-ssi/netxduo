@@ -27,7 +27,7 @@
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_xcbc_xor                                 PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -59,11 +59,14 @@
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s), disabled */
+/*                                            unaligned access by default,*/
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP static VOID _nx_crypto_xcbc_xor(UCHAR *plaintext, UCHAR *key, UCHAR *ciphertext)
 {
-#ifndef NX_CRYPTO_DISABLE_UNALIGNED_ACCESS
+#ifdef NX_CRYPTO_ENABLE_UNALIGNED_ACCESS
 UINT *p = (UINT *)plaintext;
 UINT *c = (UINT *)ciphertext;
 UINT *k = (UINT *)key;
@@ -98,7 +101,7 @@ UINT *k = (UINT *)key;
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _nx_crypto_xcbc_mac                                 PORTABLE C      */
-/*                                                           6.0          */
+/*                                                           6.1          */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    Timothy Stapko, Microsoft Corporation                               */
@@ -142,6 +145,9 @@ UINT *k = (UINT *)key;
 /*    DATE              NAME                      DESCRIPTION             */
 /*                                                                        */
 /*  05-19-2020     Timothy Stapko           Initial Version 6.0           */
+/*  09-30-2020     Timothy Stapko           Modified comment(s),          */
+/*                                            verified memcpy use cases,  */
+/*                                            resulting in version 6.1    */
 /*                                                                        */
 /**************************************************************************/
 NX_CRYPTO_KEEP UINT _nx_crypto_xcbc_mac(VOID *crypto_metadata, UINT (*crypto_function)(VOID *, UCHAR *, UCHAR *, UINT),
@@ -209,7 +215,7 @@ UINT   key_size_in_bits = additional_len;
     key_set_function(crypto_metadata, key, key_size_in_bits >> 5);
     crypto_function(crypto_metadata, K2, K2, block_size);
 
-    NX_CRYPTO_MEMCPY(pad, input, input_length_in_byte);
+    NX_CRYPTO_MEMCPY(pad, input, input_length_in_byte); /* Use case of memcpy is verified. */
 
     /* XOR M with E and Key K2 or K3 */
     _nx_crypto_xcbc_xor(E, pad, E);
@@ -219,7 +225,7 @@ UINT   key_size_in_bits = additional_len;
     key_set_function(crypto_metadata, K1, sizeof(K1) >> 2);
     crypto_function(crypto_metadata, E, E, block_size);
 
-    NX_CRYPTO_MEMCPY(output, E, icv_len);
+    NX_CRYPTO_MEMCPY(output, E, icv_len); /* Use case of memcpy is verified. */
 
 #ifdef NX_SECURE_KEY_CLEAR
     NX_CRYPTO_MEMSET(K1, 0, sizeof(K1));
